@@ -10,6 +10,11 @@
  
     <!-- GameScreen -->
     <string name="title_activity_game_screen">GameScreen</string>
-	<string name="Side">Side</string>
+	
+    <!-- CorpFragment -->
+    <string name="CorpTitle">Corp Game Fragment</string>
+	
+    <!-- RunnerFragment -->
+    <string name="RunnerTitle">Runner Game Fragment</string>
 
 </resources>

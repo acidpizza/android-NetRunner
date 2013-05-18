@@ -1,15 +1,18 @@
 package tan.shawn.jerold.netrunner;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class GameScreen extends Activity {
 
+	private String _side;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -17,7 +20,7 @@ public class GameScreen extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 		
-		setupGame();
+		setupGame(savedInstanceState);
 	}
 
 	/**
@@ -53,31 +56,82 @@ public class GameScreen extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private boolean setupGame()
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) 
 	{
-		Bundle extra = getIntent().getExtras();
-		if(extra == null)
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  savedInstanceState.putString("SIDE", _side);
+	}
+	
+	private boolean setupGame(Bundle savedInstanceState)
+	{
+		if(savedInstanceState == null)
 		{
-			Log.e("SetupGame","Extra is null");
-			return false;
+			// New game. Start from scratch
+			// Get parameters passed from main menu
+			Bundle extra = getIntent().getExtras();
+			if(extra == null)
+			{
+				Log.e("SetupGame","Extra is null");
+				return false;
+			}
+			
+			// Populate relevant parameters
+			_side = extra.getString("SIDE");
 		}
 		else
 		{
-			String side = extra.getString("SIDE");
-			TextView textView = (TextView) findViewById(R.id.Side);
-			if(side.equals("Runner"))
-			{
-			    textView.setText("Runner");
-			}
-			else if(side.equals("Corporation"))
-			{
-				textView.setText("Corporation");
-			}
-			else
-			{
-				Log.e("SetupGame","Cannot determine side: " + side);
-				return false;
-			}
+			// Resuming from previous state
+			_side = savedInstanceState.getString("SIDE");
+		}
+		
+			
+		if(_side.equals("Runner"))
+		{   
+		    return setupRunner(savedInstanceState);
+		}
+		else if(_side.equals("Corporation"))
+		{
+			return setupCorp(savedInstanceState);
+		}
+		else
+		{
+			Log.e("SetupGame","Cannot determine side: " + _side);
+			return false;
+		}
+	
+	}
+	
+	private boolean setupRunner(Bundle savedInstanceState)
+	{
+		if(savedInstanceState == null)
+		{
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.add(R.id.SideFragmentHolder, new RunnerFragment());
+			ft.commit();
+		}
+		else
+		{
+			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();
+		}
+		
+		return true;
+	}
+	
+	private boolean setupCorp(Bundle savedInstanceState)
+	{	
+		if(savedInstanceState == null)
+		{
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.add(R.id.SideFragmentHolder, new CorpFragment());
+			ft.commit();
+		}
+		else
+		{
+			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();
 		}
 		
 		return true;
