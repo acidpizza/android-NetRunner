@@ -7,14 +7,25 @@ import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-public class GameScreen extends Activity {
-
+public class GameScreen extends Activity implements CorpFragment.OnItemSelectedListener 
+{
+	@Override
+	public void onItemSelected(String msg) 
+	{
+		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show(); 
+	}
+	
+	
+	
+	// ----------------------------------------------------------------------------------
 	private String _side;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_screen);
 		// Show the Up button in the action bar.
@@ -26,21 +37,22 @@ public class GameScreen extends Activity {
 	/**
 	 * Set up the {@link android.app.ActionBar}.
 	 */
-	private void setupActionBar() {
-
+	private void setupActionBar() 
+	{
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game_screen, menu);
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
@@ -137,4 +149,25 @@ public class GameScreen extends Activity {
 		return true;
 	}
 	
+	public void SwitchLayout(View view)
+	{
+		Log.e("1","Switch");
+		if(_side.equals("Runner"))
+		{
+			_side="Corporation";
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.SideFragmentHolder, new CorpFragment());
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			ft.commit();
+		}
+		else if(_side.equals("Corporation"))
+		{
+			_side="Runner";
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.SideFragmentHolder, new RunnerFragment());
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			ft.commit();
+		}
+	}
+
 }

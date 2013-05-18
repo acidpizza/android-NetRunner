@@ -7,13 +7,14 @@
     <!-- Main -->
     <string name="ChooseSide">Choose Your Side</string>
     <string name="StartGame">Start Game</string>
- 
+
     <!-- GameScreen -->
     <string name="title_activity_game_screen">GameScreen</string>
-	
+    <string name="button_Switch">Switch</string>
+
     <!-- CorpFragment -->
     <string name="CorpTitle">Corp Game Fragment</string>
-	
+
     <!-- RunnerFragment -->
     <string name="RunnerTitle">Runner Game Fragment</string>
 

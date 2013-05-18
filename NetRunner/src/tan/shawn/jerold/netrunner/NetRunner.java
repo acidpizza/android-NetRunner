@@ -24,11 +24,11 @@ public class NetRunner extends Activity {
 
     public void startGame(View view) 
     {
-    	Intent intent = new Intent(this, GameScreen.class);
     	
+    	Intent intentFrag = new Intent(this, GameScreen.class);
+    	String side = "";
     	ToggleButton toggle = (ToggleButton)findViewById(R.id.toggleSide);
 
-    	String side = "";
     	if(toggle.isChecked())
     	{
     		side = "Runner";
@@ -38,8 +38,26 @@ public class NetRunner extends Activity {
     		side = "Corporation";
     	}
     	
-    	intent.putExtra("SIDE", side);
-    	startActivity(intent);
+    	intentFrag.putExtra("SIDE", side);
+    	startActivity(intentFrag);
+    	
+    	
+    	/*
+    	ToggleButton toggle = (ToggleButton)findViewById(R.id.toggleSide);
+
+    	if(toggle.isChecked())
+    	{
+    		//side = "Runner";		
+			Intent intent = new Intent(this, Runner.class);
+	    	startActivity(intent);
+    	}
+    	else
+    	{
+    		//side = "Corporation";
+			Intent intent = new Intent(this, Corp.class);
+	    	startActivity(intent);
+    	}
+    	*/
     }
 	
 }
