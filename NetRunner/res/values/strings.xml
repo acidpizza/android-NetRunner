@@ -3,9 +3,13 @@
 
     <string name="app_name">NetRunner</string>
     <string name="action_settings">Settings</string>
-    
+
     <!-- Main -->
-	<string  name="ChooseSide">Choose Your Side</string>
-	<string  name="StartGame">Start Game</string>
+    <string name="ChooseSide">Choose Your Side</string>
+    <string name="StartGame">Start Game</string>
+ 
+    <!-- GameScreen -->
+    <string name="title_activity_game_screen">GameScreen</string>
+	<string name="Side">Side</string>
 
 </resources>

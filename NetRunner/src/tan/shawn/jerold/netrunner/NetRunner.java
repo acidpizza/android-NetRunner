@@ -1,8 +1,11 @@
 package tan.shawn.jerold.netrunner;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.ToggleButton;
 
 public class NetRunner extends Activity {
 
@@ -19,4 +22,24 @@ public class NetRunner extends Activity {
 		return true;
 	}
 
+    public void startGame(View view) 
+    {
+    	Intent intent = new Intent(this, GameScreen.class);
+    	
+    	ToggleButton toggle = (ToggleButton)findViewById(R.id.toggleSide);
+
+    	String side = "";
+    	if(toggle.isChecked())
+    	{
+    		side = "Runner";
+    	}
+    	else
+    	{
+    		side = "Corporation";
+    	}
+    	
+    	intent.putExtra("SIDE", side);
+    	startActivity(intent);
+    }
+	
 }

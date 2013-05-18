@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="tan.shawn.jerold.netrunner.GameScreen"
+            android:label="@string/title_activity_game_screen"
+            android:parentActivityName="tan.shawn.jerold.netrunner.NetRunner" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="tan.shawn.jerold.netrunner.NetRunner" />
+        </activity>
     </application>
 
 </manifest>
