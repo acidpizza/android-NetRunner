@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NetRunner</string>
+    <string name="action_settings">Settings</string>
+    
+    <!-- Main -->
+	<string  name="ChooseSide">Choose Your Side</string>
+	<string  name="StartGame">Start Game</string>
+
+</resources>
