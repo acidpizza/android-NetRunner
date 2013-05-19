@@ -1,16 +1,22 @@
 package tan.shawn.jerold.netrunner;
 
 import Images.ImageAdapter;
+import Images.TouchImageView;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.Toast;
 
 public class CorpFragment extends Fragment
 {	
@@ -86,7 +92,7 @@ public class CorpFragment extends Fragment
 	
 	private void setupBoard(GameState boardSettings)
 	{
-		GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
+		final GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
 	   
 		gridview.setAdapter(new ImageAdapter(getActivity()));
 
@@ -94,7 +100,16 @@ public class CorpFragment extends Fragment
 	    {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
 	        {
-	            Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+	            // custom dialog	        	
+	        	Dialog dialog = new Dialog(getActivity());
+				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        	dialog.setContentView(R.layout.card_viewer);
+		
+				TouchImageView view = (TouchImageView) dialog.findViewById(R.id.cardView);
+	            view.setImageResource((int) gridview.getItemIdAtPosition(position));
+				
+				dialog.show();
+				dialog.getWindow().setLayout(390, 544);	
 	        }
 	    });
 	    

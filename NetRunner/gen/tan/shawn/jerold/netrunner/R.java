@@ -49,20 +49,22 @@ public final class R {
         public static final int wey_upgrade1=0x7f020015;
     }
     public static final class id {
-        public static final int Header=0x7f090006;
-        public static final int MainContainer=0x7f090004;
+        public static final int Header=0x7f090007;
+        public static final int MainContainer=0x7f090005;
         public static final int SideFragmentHolder=0x7f090000;
-        public static final int action_settings=0x7f090007;
+        public static final int action_settings=0x7f090008;
         public static final int button1=0x7f090001;
         public static final int button_start=0x7f090003;
-        public static final int gridView1=0x7f090005;
+        public static final int cardView=0x7f090004;
+        public static final int gridView1=0x7f090006;
         public static final int toggleSide=0x7f090002;
     }
     public static final class layout {
         public static final int activity_game_screen=0x7f030000;
         public static final int activity_net_runner=0x7f030001;
-        public static final int fragment_corp=0x7f030002;
-        public static final int fragment_runner=0x7f030003;
+        public static final int card_viewer=0x7f030002;
+        public static final int fragment_corp=0x7f030003;
+        public static final int fragment_runner=0x7f030004;
     }
     public static final class menu {
         public static final int corp=0x7f080000;
