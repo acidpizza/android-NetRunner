@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/corp"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/Header"
+    android:columnCount="1"
+    android:orientation="horizontal" >
+	
+    <GridView
+        android:id="@+id/gridView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:text="@string/CorpTitle"
-        android:textSize="14sp" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:scrollbars="none"
+        android:columnWidth="420dp"
+        android:verticalSpacing="10dp"
+    	android:horizontalSpacing="10dp"
+        android:numColumns="2" >
+    </GridView>
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_launcher" />
-
-</LinearLayout>
+</RelativeLayout>

@@ -1,13 +1,16 @@
 package tan.shawn.jerold.netrunner;
 
-import DragAndDrop.MyDragListener;
-import DragAndDrop.TouchListener_DragAtTouch;
+import Images.ImageAdapter;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.Toast;
 
 public class CorpFragment extends Fragment
 {	
@@ -46,8 +49,9 @@ public class CorpFragment extends Fragment
 	{
 	    View view = inflater.inflate(R.layout.fragment_corp, container, false);
 	    
-	    view.findViewById(R.id.imageView1).setOnTouchListener(new TouchListener_DragAtTouch());
-	    view.findViewById(R.id.Header).setOnDragListener(new MyDragListener());
+	    //view.findViewById(R.id.imageView1).setOnTouchListener(new TouchListener_DragAtTouch());
+	    //view.findViewById(R.id.Header).setOnDragListener(new MyDragListener());
+	    
 	    /*
 	    view.findViewById(R.id.imageView1).setOnClickListener(new View.OnClickListener() 
 	    {
@@ -61,4 +65,39 @@ public class CorpFragment extends Fragment
 	    
 	    return view;		
 	}
+	
+	public void onActivityCreated (Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+	    GameState boardSettings = new GameState();
+	    getSettings(savedInstanceState, boardSettings);
+	    setupBoard(boardSettings);
+	}
+	
+	private boolean getSettings(Bundle savedInstanceState, GameState boardSettings)
+	{
+		if(savedInstanceState==null)
+		{
+			return true;
+		}
+		
+		return true;
+	}
+	
+	private void setupBoard(GameState boardSettings)
+	{
+		GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
+	   
+		gridview.setAdapter(new ImageAdapter(getActivity()));
+
+	    gridview.setOnItemClickListener(new OnItemClickListener() 
+	    {
+	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
+	        {
+	            Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	    
+	}
+	
 }
