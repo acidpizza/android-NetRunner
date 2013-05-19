@@ -94,7 +94,21 @@ public class CorpFragment extends Fragment
 	{
 		final GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
 	   
-		gridview.setAdapter(new ImageAdapter(getActivity()));
+	    Integer[] cards = {
+	            R.drawable.cneutral_agenda1, R.drawable.cneutral_agenda2,
+	            R.drawable.cneutral_asset1, R.drawable.cneutral_asset2,
+	            R.drawable.cneutral_ice1, R.drawable.cneutral_ice2,
+	            R.drawable.cneutral_ice3, R.drawable.cneutral_operation1,
+	            R.drawable.wey_hq1, R.drawable.wey_agenda1, 
+	            R.drawable.wey_agenda2, R.drawable.wey_asset1,
+	            R.drawable.wey_ice1, R.drawable.wey_ice2,
+	            R.drawable.wey_ice3, R.drawable.wey_ice4,
+	            R.drawable.wey_op1, R.drawable.wey_op2,
+	            R.drawable.wey_op3, R.drawable.wey_op4,
+	            R.drawable.wey_upgrade1 
+	    };
+		
+		gridview.setAdapter(new ImageAdapter(getActivity(), cards));
 
 	    gridview.setOnItemClickListener(new OnItemClickListener() 
 	    {

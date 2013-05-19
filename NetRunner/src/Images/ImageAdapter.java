@@ -12,9 +12,10 @@ public class ImageAdapter extends BaseAdapter
 {
     private Context mContext;
 
-    public ImageAdapter(Context c) 
+    public ImageAdapter(Context c, Integer[] cards) 
     {
         mContext = c;
+        mThumbIds = cards;
     }
 
     public int getCount() 
@@ -60,18 +61,5 @@ public class ImageAdapter extends BaseAdapter
     }
 
     // references to our images
-    private Integer[] mThumbIds = 
-    	{
-            R.drawable.neutral_agenda1, R.drawable.neutral_agenda2,
-            R.drawable.neutral_asset1, R.drawable.neutral_asset2,
-            R.drawable.neutral_ice1, R.drawable.neutral_ice2,
-            R.drawable.neutral_ice3, R.drawable.neutral_operation1,
-            R.drawable.wey_agenda1, R.drawable.wey_agenda2,
-            R.drawable.wey_asset1, R.drawable.wey_hq1,
-            R.drawable.wey_ice1, R.drawable.wey_ice2,
-            R.drawable.wey_ice3, R.drawable.wey_ice4,
-            R.drawable.wey_op1, R.drawable.wey_op2,
-            R.drawable.wey_op3, R.drawable.wey_op4,
-            R.drawable.wey_upgrade1 
-    };
+    private Integer[] mThumbIds;
 }

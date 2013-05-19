@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/corp"
-    android:columnCount="1"
     android:orientation="horizontal" >
 	
     <GridView
