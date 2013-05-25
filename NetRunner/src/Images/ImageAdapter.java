@@ -1,6 +1,7 @@
 package Images;
 
-import tan.shawn.jerold.netrunner.R;
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,16 @@ public class ImageAdapter extends BaseAdapter
 {
     private Context mContext;
 
-    public ImageAdapter(Context c, Integer[] cards) 
+    public ImageAdapter(Context c, ArrayList<Integer> cardList) 
     {
         mContext = c;
-        mThumbIds = cards;
+        mCardList = cardList;
     }
-
+    
+    
     public int getCount() 
     {
-        return mThumbIds.length;
+        return mCardList.size();
     }
 
     public Object getItem(int position) 
@@ -30,9 +32,9 @@ public class ImageAdapter extends BaseAdapter
 
     public long getItemId(int position) 
     {
-    	if( 0 <= position && position < mThumbIds.length)
+    	if( 0 <= position && position < mCardList.size())
 		{
-			return mThumbIds[position];
+			return mCardList.get(position);
 		}
     	else
     	{
@@ -47,7 +49,7 @@ public class ImageAdapter extends BaseAdapter
         if (convertView == null) 
         {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            //imageView.setLayoutParams(new GridView.LayoutParams(300, 418));
+            imageView.setLayoutParams(new GridView.LayoutParams(150, 209));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
         } 
@@ -56,10 +58,10 @@ public class ImageAdapter extends BaseAdapter
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        imageView.setImageResource(mCardList.get(position));
         return imageView;
     }
 
     // references to our images
-    private Integer[] mThumbIds;
+    private ArrayList<Integer> mCardList;
 }

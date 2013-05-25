@@ -13,7 +13,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:scrollbars="none"
-        android:columnWidth="420dp"
         android:verticalSpacing="10dp"
     	android:horizontalSpacing="10dp"
         android:numColumns="2" >
