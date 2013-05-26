@@ -60,34 +60,34 @@ public class GameState
 	{	
 		public class Server
 		{
-			ArrayList<Card> _ice;
-			ArrayList<Card> _installs;	
+			public ArrayList<Card> _ice = new ArrayList<Card>();
+			public ArrayList<Card> _installs = new ArrayList<Card>();	
 		}
 		
 		public class ServerArchive extends Server
 		{
-			ArrayList<Card> _discards;
-			int _numRevealed;
-			int _numNotRevealed;
+			public ArrayList<Card> _discards;
+			public int _numRevealed;
+			public int _numNotRevealed;
 		}
 		public ServerArchive _serverArchive = new ServerArchive();
 		
 		public class ServerResearch extends Server
 		{
-			ArrayList<Card> _deck;
+			public ArrayList<Card> _deck;
 		}
 		public ServerResearch _serverResearch = new ServerResearch();
 		
 		public class ServerHQ extends Server
 		{
-			ArrayList<Card> _hand;
-			int _maxHandSize;
+			public ArrayList<Card> _hand;
+			public int _maxHandSize;
 		}
 		public ServerHQ _serverHQ = new ServerHQ();
 		
 		public class ServerRemote extends Server
 		{ 
-			Boolean _assetAgendaInstalled;
+			public Boolean _assetAgendaInstalled;
 		}
 		public ArrayList<ServerRemote> _serverRemote = new ArrayList<GameState.CorpState.ServerRemote>();
 	}

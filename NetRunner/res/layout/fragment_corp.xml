@@ -1,58 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/corp"
     android:orientation="vertical" >
-
-    <GridView
-        android:id="@+id/gridViewIce"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:columnWidth="420dp"
-        android:horizontalSpacing="10dp"
-        android:numColumns="3"
-        android:scrollbars="none"
-        android:verticalSpacing="10dp" >
-    </GridView>
     
     <GridView
         android:id="@+id/gridViewServer"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:columnWidth="420dp"
-        android:horizontalSpacing="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:horizontalSpacing="6dp"
+        android:verticalSpacing="6dp" 
         android:numColumns="3"
-        android:scrollbars="none"
-        android:verticalSpacing="10dp" >
+        android:scrollbars="none">
     </GridView>
           
-    <LinearLayout 
-        android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="horizontal" >
-    
-	    <Button
-		    android:id="@+id/ButtonServer"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-	        android:gravity="left"
-	        android:text="Add Server!"/>
-	
-	    <View 
-	        android:layout_height="0dp"
-	        android:layout_width="0dp"
-	        android:layout_weight="1"
-	        />
-	    
-	    <Button
-	        android:id="@+id/ButtonIce"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:gravity="right"
-	        android:text="Add ICE!" />
-    </LinearLayout>
 </LinearLayout>

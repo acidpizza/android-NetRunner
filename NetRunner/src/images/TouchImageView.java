@@ -24,8 +24,8 @@ public class TouchImageView extends ImageView {
     // Remember some things for zooming
     PointF last = new PointF();
     PointF start = new PointF();
-    float minScale = 0.1f;
-    float maxScale = 3f;
+    float minScale = 1f;
+    float maxScale = 4f;
     float[] m;
 
 

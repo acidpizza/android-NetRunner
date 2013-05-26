@@ -5,10 +5,13 @@ import images.TouchImageView;
 
 import java.util.ArrayList;
 
+import cards.Card;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,11 +71,11 @@ public class CorpFragment extends Fragment
     ImageAdapter imageAdapterServers;
     ImageAdapter imageAdapterIce;
     
-	ArrayList<Integer> mCardListServer = new ArrayList<Integer>();
-	ArrayList<Integer> mCardListIce = new ArrayList<Integer>();
-	int indexServer = 2;
-	int indexIce = 10;
-
+    int _page = 0;
+	ArrayList<Integer> _cardList = new ArrayList<Integer>();
+	int _iceTracker = 0;
+	GameState _gameState;
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -99,57 +102,43 @@ public class CorpFragment extends Fragment
 	public void onActivityCreated (Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-	    GameState boardSettings = new GameState();
-	    getSettings(savedInstanceState, boardSettings);
-	    setupBoard(boardSettings);
-	    
-	    
-	    View button = getActivity().findViewById(R.id.ButtonServer);
-	    button.setOnClickListener(
-	        new View.OnClickListener() {
-	            @Override
-	            public void onClick(View v) {
-	                /* DO SOMETHING UPON THE CLICK */
-	            	AddImageServer(v);
-	            }
-	        }
-	    );
-
-	    View button2 = getActivity().findViewById(R.id.ButtonIce);
-	    button2.setOnClickListener(
-	        new View.OnClickListener() {
-	            @Override
-	            public void onClick(View v) {
-	                /* DO SOMETHING UPON THE CLICK */
-	            	AddImageIce(v);
-	            }
-	        }
-	    );
-	    
+	    getSettings(savedInstanceState);
+	    setupBoard();   
 	}
 	
-	private boolean getSettings(Bundle savedInstanceState, GameState boardSettings)
+	private boolean getSettings(Bundle savedInstanceState)
 	{
 		if(savedInstanceState==null)
 		{
+			// First creation
+			_gameState = new GameState();
 			return true;
 		}
+		
+		// Restart of activity
+		// Fill up gameState with details from savedInstanceState
 		
 		return true;
 	}
 	
-	private void setupBoard(GameState boardSettings)
-	{
+	private void setupBoard()
+	{	
+		Card.GetDeck(_gameState._corpState._serverArchive._ice, 1);
+		Card.GetDeck(_gameState._corpState._serverResearch._ice, 3);
+		Card.GetDeck(_gameState._corpState._serverHQ._ice, 2);
+		
+		Card.GetDeck(_gameState._corpState._serverArchive._installs, 2);
+		Card.GetDeck(_gameState._corpState._serverResearch._installs, 3);
+		Card.GetDeck(_gameState._corpState._serverHQ._installs, 4);
 		
 		
-mCardListServer.add(R.drawable.nothing);
-mCardListServer.add(R.drawable.corp_back);
-mCardListServer.add(R.drawable.wey_hq1);
+		updateCardList();
 		
 		final GridView gridviewServer = (GridView) getActivity().findViewById(R.id.gridViewServer);
-		imageAdapterServers = new ImageAdapter(getActivity(), mCardListServer);
+		imageAdapterServers = new ImageAdapter(getActivity(), _cardList, _iceTracker);
 		gridviewServer.setAdapter(imageAdapterServers);
 
+		// Allow viewing of card in dialog on click
 	    gridviewServer.setOnItemClickListener(new OnItemClickListener() 
 	    {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
@@ -165,51 +154,156 @@ mCardListServer.add(R.drawable.wey_hq1);
 				dialog.show();
 				dialog.getWindow().setLayout(390, 544);	
 	        }
-	    });
-	    
-	    final GridView gridviewIce = (GridView) getActivity().findViewById(R.id.gridViewIce);
-	    imageAdapterIce = new ImageAdapter(getActivity(), mCardListIce);
-		gridviewIce.setAdapter(imageAdapterIce);
-
-	    gridviewIce.setOnItemClickListener(new OnItemClickListener() 
-	    {
-	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
-	        {
-	            // custom dialog	        	
-	        	Dialog dialog = new Dialog(getActivity());
-				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-	        	dialog.setContentView(R.layout.card_viewer);
+	    });	    
+	}	
+	
+	void updateCardList()
+	{
+		_cardList.clear();
 		
-				TouchImageView view = (TouchImageView) dialog.findViewById(R.id.cardView);
-	            view.setImageResource((int) gridviewIce.getItemIdAtPosition(position));
+		int maxIce = 0;
+		int maxInstalls = 0;
+		
+		if(_page == 0)
+		{
+			// Ice List
+			maxIce = GetMaxIce();
+
+			for(int i=( maxIce - 1 ); i>=0; i--)
+			{
+				// Ice for Archives
+				if(i < _gameState._corpState._serverArchive._ice.size())
+				{
+					_cardList.add(_gameState._corpState._serverArchive._ice.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
 				
-				dialog.show();
-				dialog.getWindow().setLayout(390, 544);	
-	        }
-	    });
-	    
-	}
-	
-	public void AddImageServer(View view)
-	{
-		mCardListServer.add(cards[indexServer]);
-		indexServer++;
-		if(indexServer > 9)
-		{
-			indexServer = 2;
+				// Ice for R&D
+				if(i < _gameState._corpState._serverResearch._ice.size())
+				{
+					_cardList.add(_gameState._corpState._serverResearch._ice.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
+				
+				// Ice for HQ
+				if(i < _gameState._corpState._serverHQ._ice.size())
+				{
+					_cardList.add(_gameState._corpState._serverHQ._ice.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
+			}
+			
+			_iceTracker = _cardList.size(); // point to the index of first non-ice
+			
+			_cardList.add(R.drawable.nothing); 		// archives
+			_cardList.add(R.drawable.corp_back);	// R&D
+			_cardList.add(R.drawable.wey_hq1);		// HQ
+			
+			// Installs List
+			maxInstalls = GetMaxInstalls();
+			
+			for(int i = 0; i < maxInstalls; i++)
+			{
+				// Installs for Archives
+				if(i < _gameState._corpState._serverArchive._installs.size())
+				{
+					_cardList.add(_gameState._corpState._serverArchive._installs.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
+				
+				// Installs for R&D
+				if(i < _gameState._corpState._serverResearch._installs.size())
+				{
+					_cardList.add(_gameState._corpState._serverResearch._installs.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
+				
+				// Installs for HQ
+				if(i < _gameState._corpState._serverHQ._installs.size())
+				{
+					_cardList.add(_gameState._corpState._serverHQ._installs.get(i)._drawableID);
+				}
+				else
+				{
+					_cardList.add(R.drawable.nothing);
+				}
+				
+			}
 		}
-		imageAdapterServers.notifyDataSetChanged();
-	}
-	
-	public void AddImageIce(View view)
-	{
-		mCardListIce.add(cards[indexIce]);
-		indexIce++;
-		if(indexIce> 16)
+		else
 		{
-			indexIce = 10;
+			//TODO: UpdateCardList code for other pages
 		}
-		imageAdapterIce.notifyDataSetChanged();
 	}
 	
+    private int GetMaxIce()
+    {
+    	int maxIce = 0;
+    	
+    	if(_page == 0)
+    	{
+        	maxIce = Math.max(maxIce, _gameState._corpState._serverArchive._ice.size());
+        	maxIce = Math.max(maxIce, _gameState._corpState._serverResearch._ice.size());
+        	maxIce = Math.max(maxIce, _gameState._corpState._serverHQ._ice.size());
+    	}
+    	else if (_page > 0)
+    	{
+    		for(int i=0; i<3; i++)
+    		{
+    			if(((_page-1)*3 + i) < _gameState._corpState._serverRemote.size())
+    			{
+    				maxIce = Math.max(maxIce, _gameState._corpState._serverRemote.get((_page-1)*3 + i)._ice.size());
+    			}
+    		}
+    	}
+    	else
+    	{
+    		return -1;
+    	}
+    	
+        return maxIce;
+    }
+    
+    private int GetMaxInstalls()
+    {
+    	int maxInstalls = 0;
+    	
+    	if(_page == 0)
+    	{	
+        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverArchive._installs.size());
+        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverResearch._installs.size());
+        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverHQ._installs.size());
+    	}
+    	else if (_page > 0)
+    	{
+    		for(int i=0; i<3; i++)
+    		{
+    			if(((_page-1)*3 + i) < _gameState._corpState._serverRemote.size())
+    			{
+    				maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverRemote.get((_page-1)*3 + i)._installs.size());
+    			}
+    		}
+    	}
+    	else 
+    	{
+    		return -1;
+    	}
+    	
+    	return maxInstalls;
+    }
 }

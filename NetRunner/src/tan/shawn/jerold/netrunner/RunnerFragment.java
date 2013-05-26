@@ -18,7 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class RunnerFragment extends Fragment
 {
-	ArrayList<Integer> mCardList = new ArrayList<Integer>();
+	ArrayList<Integer> _cardList = new ArrayList<Integer>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -65,10 +65,10 @@ public class RunnerFragment extends Fragment
 
 		for(int i=0; i<cards.length; i++)
 		{
-			mCardList.add(cards[i]);
+			_cardList.add(cards[i]);
 		}
 		
-		gridview.setAdapter(new ImageAdapter(getActivity(), mCardList));
+		gridview.setAdapter(new ImageAdapter(getActivity(), _cardList, 0));
 
 		gridview.setOnItemClickListener(new OnItemClickListener() 
 		{

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import tan.shawn.jerold.netrunner.GameState;
+import tan.shawn.jerold.netrunner.R;
 
 public abstract class CardOperation extends Card
 {
@@ -23,6 +24,7 @@ class CardOperation_AggressiveNegotiation extends CardOperation
 {
 	public CardOperation_AggressiveNegotiation()
 	{
+		_drawableID = R.drawable.wey_op1;
 		_cost = 1;
 	}
 	
@@ -54,6 +56,7 @@ class CardOperation_BeanstalkRoyalties extends CardOperation
 {
 	public CardOperation_BeanstalkRoyalties()
 	{
+		_drawableID = R.drawable.wey_op2;
 		_operationType = OperationType.Transaction;
 	}
 	
@@ -77,6 +80,7 @@ class CardOperation_ScorchedEarth extends CardOperation
 {
 	public CardOperation_ScorchedEarth()
 	{
+		_drawableID = R.drawable.wey_op3;
 		_cost = 3;
 		_operationType = OperationType.BlackOps;
 	}
@@ -101,6 +105,7 @@ class CardOperation_ShipmentFromKaguya extends CardOperation
 {
 	public CardOperation_ShipmentFromKaguya()
 	{
+		_drawableID = R.drawable.wey_op4;
 	}
 	
 	@Override
