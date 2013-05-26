@@ -1,4 +1,4 @@
-package DragAndDrop;
+package dragAndDrop;
 
 import android.content.ClipData;
 import android.view.View;

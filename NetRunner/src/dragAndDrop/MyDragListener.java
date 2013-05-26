@@ -1,4 +1,4 @@
-package DragAndDrop;
+package dragAndDrop;
 
 import android.view.DragEvent;
 import android.view.View;

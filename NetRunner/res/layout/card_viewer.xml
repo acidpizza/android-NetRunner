@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-    <Images.TouchImageView
+    <images.TouchImageView
         android:id="@+id/cardView"
         android:layout_width="fill_parent"
     	android:layout_height="fill_parent"/>

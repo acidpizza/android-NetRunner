@@ -1,13 +1,13 @@
 package tan.shawn.jerold.netrunner;
 
+import images.ImageAdapter;
+import images.TouchImageView;
+
 import java.util.ArrayList;
 
-import Images.ImageAdapter;
-import Images.TouchImageView;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

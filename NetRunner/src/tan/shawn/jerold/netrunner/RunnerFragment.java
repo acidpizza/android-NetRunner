@@ -1,9 +1,10 @@
 package tan.shawn.jerold.netrunner;
 
+import images.ImageAdapter;
+import images.TouchImageView;
+
 import java.util.ArrayList;
 
-import Images.ImageAdapter;
-import Images.TouchImageView;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -45,7 +46,7 @@ public class RunnerFragment extends Fragment
 	}
 
 	private void setupBoard(GameState boardSettings)
-	{
+	{	
 		final GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
 
 		Integer[] cards = {
