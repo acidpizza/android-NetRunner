@@ -51,25 +51,8 @@ public class CorpFragment extends Fragment
 	}
 	
 	// ----------------------------------------------------------------------------------------------
-    Integer[] cards = {
-    		R.drawable.wey_hq1, R.drawable.corp_back,  
-    		
-    		R.drawable.cneutral_agenda1, R.drawable.cneutral_agenda2,
-            R.drawable.cneutral_asset1, R.drawable.cneutral_asset2,
-            R.drawable.wey_agenda1, R.drawable.wey_agenda2, 
-            R.drawable.wey_asset1, R.drawable.wey_upgrade1, 
-            
-            R.drawable.cneutral_ice1, R.drawable.cneutral_ice2,
-            R.drawable.cneutral_ice3,             
-            R.drawable.wey_ice1, R.drawable.wey_ice2,
-            R.drawable.wey_ice3, R.drawable.wey_ice4,
-            
-            R.drawable.cneutral_op1,
-            R.drawable.wey_op1, R.drawable.wey_op2,
-            R.drawable.wey_op3, R.drawable.wey_op4
-    };
+    
     ImageAdapter imageAdapterServers;
-    ImageAdapter imageAdapterIce;
     
     int _page = 0;
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
@@ -122,13 +105,13 @@ public class CorpFragment extends Fragment
 	
 	private void setupBoard()
 	{	
-		Card.GetDeck(_gameState._corpState._serverArchive._ice, 1);
-		Card.GetDeck(_gameState._corpState._serverResearch._ice, 3);
-		Card.GetDeck(_gameState._corpState._serverHQ._ice, 2);
+		Card.GetDeck(_gameState._corpState._server.get(0)._ice, 1);
+		Card.GetDeck(_gameState._corpState._server.get(1)._ice, 3);
+		Card.GetDeck(_gameState._corpState._server.get(2)._ice, 2);
 		
-		Card.GetDeck(_gameState._corpState._serverArchive._installs, 2);
-		Card.GetDeck(_gameState._corpState._serverResearch._installs, 3);
-		Card.GetDeck(_gameState._corpState._serverHQ._installs, 4);
+		Card.GetDeck(_gameState._corpState._server.get(0)._installs, 2);
+		Card.GetDeck(_gameState._corpState._server.get(1)._installs, 3);
+		Card.GetDeck(_gameState._corpState._server.get(2)._installs, 4);
 		
 		
 		updateCardList();
@@ -163,90 +146,49 @@ public class CorpFragment extends Fragment
 		int maxIce = 0;
 		int maxInstalls = 0;
 		
-		if(_page == 0)
-		{
-			// Ice List
-			maxIce = GetMaxIce();
+		// Ice List
+		maxIce = GetMaxIce();
 
-			for(int i=( maxIce - 1 ); i>=0; i--)
+		for(int i=( maxIce - 1 ); i>=0; i--)
+		{
+			for(int j=0; j<3; j++)
 			{
-				// Ice for Archives
-				if(i < _gameState._corpState._serverArchive._ice.size())
+				if(i < _gameState._corpState._server.get(_page + j)._ice.size())
 				{
-					_cardList.add(_gameState._corpState._serverArchive._ice.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-				
-				// Ice for R&D
-				if(i < _gameState._corpState._serverResearch._ice.size())
-				{
-					_cardList.add(_gameState._corpState._serverResearch._ice.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-				
-				// Ice for HQ
-				if(i < _gameState._corpState._serverHQ._ice.size())
-				{
-					_cardList.add(_gameState._corpState._serverHQ._ice.get(i)._drawableID);
+					_cardList.add(_gameState._corpState._server.get(_page + j)._ice.get(i)._drawableID);
 				}
 				else
 				{
 					_cardList.add(R.drawable.nothing);
 				}
 			}
-			
-			_iceTracker = _cardList.size(); // point to the index of first non-ice
-			
+		}
+		_iceTracker = _cardList.size(); // point to the index of first non-ice
+	
+		if(_page == 0)
+		{
 			_cardList.add(R.drawable.nothing); 		// archives
 			_cardList.add(R.drawable.corp_back);	// R&D
 			_cardList.add(R.drawable.wey_hq1);		// HQ
-			
-			// Installs List
-			maxInstalls = GetMaxInstalls();
-			
-			for(int i = 0; i < maxInstalls; i++)
+		}
+		
+		// Installs List
+		maxInstalls = GetMaxInstalls();
+		
+		for(int i = 0; i < maxInstalls; i++)
+		{
+			for(int j=0; j<3; j++)
 			{
 				// Installs for Archives
-				if(i < _gameState._corpState._serverArchive._installs.size())
+				if(i < _gameState._corpState._server.get(_page + j)._installs.size())
 				{
-					_cardList.add(_gameState._corpState._serverArchive._installs.get(i)._drawableID);
+					_cardList.add(_gameState._corpState._server.get(_page + j)._installs.get(i)._drawableID);
 				}
 				else
 				{
 					_cardList.add(R.drawable.nothing);
 				}
-				
-				// Installs for R&D
-				if(i < _gameState._corpState._serverResearch._installs.size())
-				{
-					_cardList.add(_gameState._corpState._serverResearch._installs.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-				
-				// Installs for HQ
-				if(i < _gameState._corpState._serverHQ._installs.size())
-				{
-					_cardList.add(_gameState._corpState._serverHQ._installs.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-				
-			}
-		}
-		else
-		{
-			//TODO: UpdateCardList code for other pages
+			}			
 		}
 	}
 	
@@ -254,27 +196,14 @@ public class CorpFragment extends Fragment
     {
     	int maxIce = 0;
     	
-    	if(_page == 0)
-    	{
-        	maxIce = Math.max(maxIce, _gameState._corpState._serverArchive._ice.size());
-        	maxIce = Math.max(maxIce, _gameState._corpState._serverResearch._ice.size());
-        	maxIce = Math.max(maxIce, _gameState._corpState._serverHQ._ice.size());
-    	}
-    	else if (_page > 0)
-    	{
-    		for(int i=0; i<3; i++)
-    		{
-    			if(((_page-1)*3 + i) < _gameState._corpState._serverRemote.size())
-    			{
-    				maxIce = Math.max(maxIce, _gameState._corpState._serverRemote.get((_page-1)*3 + i)._ice.size());
-    			}
-    		}
-    	}
-    	else
-    	{
-    		return -1;
-    	}
-    	
+		for(int i=0; i<3; i++)
+		{
+			if((_page*3 + i) < _gameState._corpState._server.size()) // if server exists
+			{
+				maxIce = Math.max(maxIce, _gameState._corpState._server.get(_page*3 + i)._ice.size());
+			}
+		}
+		
         return maxIce;
     }
     
@@ -282,27 +211,14 @@ public class CorpFragment extends Fragment
     {
     	int maxInstalls = 0;
     	
-    	if(_page == 0)
-    	{	
-        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverArchive._installs.size());
-        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverResearch._installs.size());
-        	maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverHQ._installs.size());
-    	}
-    	else if (_page > 0)
-    	{
-    		for(int i=0; i<3; i++)
-    		{
-    			if(((_page-1)*3 + i) < _gameState._corpState._serverRemote.size())
-    			{
-    				maxInstalls = Math.max(maxInstalls, _gameState._corpState._serverRemote.get((_page-1)*3 + i)._installs.size());
-    			}
-    		}
-    	}
-    	else 
-    	{
-    		return -1;
-    	}
-    	
-    	return maxInstalls;
+    	for(int i=0; i<3; i++)
+		{
+			if((_page*3 + i) < _gameState._corpState._server.size()) // if server exists
+			{
+				maxInstalls = Math.max(maxInstalls, _gameState._corpState._server.get(_page*3 + i)._installs.size());
+			}
+		}
+
+		return maxInstalls;
     }
 }

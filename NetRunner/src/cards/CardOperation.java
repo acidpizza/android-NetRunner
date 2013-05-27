@@ -39,14 +39,14 @@ class CardOperation_AggressiveNegotiation extends CardOperation
 		}
 		else
 		{
-			Collections.sort((List<Card>) gameState._corpState._serverResearch);
+			Collections.sort((List<Card>) gameState._corpState._deck);
 			
 			//TODO: Aggressive Negotiation Implementation
-			// Choose one card from _serverResearch
-			// Remove card from _serverResearch
-			// Add card to _serverHQ
+			// Choose one card from Deck
+			// Remove card from Deck
+			// Add card to Hand
 			
-			Collections.shuffle((List<?>) gameState._corpState._serverResearch);
+			Collections.shuffle((List<?>) gameState._corpState._deck);
 			return true;
 		}
 	}

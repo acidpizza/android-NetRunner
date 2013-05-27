@@ -58,38 +58,29 @@ public class GameState
 	
 	public class CorpState extends SideState
 	{	
+		public ArrayList<Card> _discards;
+		public int _numRevealed;
+		public int _numNotRevealed;
+		
+		public ArrayList<Card> _deck;
+		
+		public ArrayList<Card> _hand;
+		public int _maxHandSize;
+		
 		public class Server
 		{
 			public ArrayList<Card> _ice = new ArrayList<Card>();
 			public ArrayList<Card> _installs = new ArrayList<Card>();	
 		}
+		public ArrayList<Server> _server = new ArrayList<GameState.CorpState.Server>();
 		
-		public class ServerArchive extends Server
+		public CorpState()
 		{
-			public ArrayList<Card> _discards;
-			public int _numRevealed;
-			public int _numNotRevealed;
+			_server.add(new Server()); // Archives
+			_server.add(new Server()); // R&D
+			_server.add(new Server()); // HQ
+			_server.add(new Server()); // 1st Remote
 		}
-		public ServerArchive _serverArchive = new ServerArchive();
-		
-		public class ServerResearch extends Server
-		{
-			public ArrayList<Card> _deck;
-		}
-		public ServerResearch _serverResearch = new ServerResearch();
-		
-		public class ServerHQ extends Server
-		{
-			public ArrayList<Card> _hand;
-			public int _maxHandSize;
-		}
-		public ServerHQ _serverHQ = new ServerHQ();
-		
-		public class ServerRemote extends Server
-		{ 
-			public Boolean _assetAgendaInstalled;
-		}
-		public ArrayList<ServerRemote> _serverRemote = new ArrayList<GameState.CorpState.ServerRemote>();
 	}
 	public CorpState _corpState = new CorpState();
 	
