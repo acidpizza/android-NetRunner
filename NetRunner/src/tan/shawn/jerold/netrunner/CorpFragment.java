@@ -74,7 +74,7 @@ public class CorpFragment extends Fragment
     int _page = 0;
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
 	int _iceTracker = 0;
-	GameState _gameState;
+	GameState _gameState = new GameState();
 	
 	
 	@Override
@@ -111,7 +111,6 @@ public class CorpFragment extends Fragment
 		if(savedInstanceState==null)
 		{
 			// First creation
-			_gameState = new GameState();
 			return true;
 		}
 		

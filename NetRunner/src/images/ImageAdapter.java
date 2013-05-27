@@ -20,6 +20,8 @@ public class ImageAdapter extends BaseAdapter
         _context = c;
         _cardList = cardList;
         _iceTracker = iceTracker;
+        
+        mat.postRotate(90);
     }
     
     
@@ -54,20 +56,14 @@ public class ImageAdapter extends BaseAdapter
         {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(_context);
                         
-            //imageView.setLayoutParams(new GridView.LayoutParams(150, 108));
-            //imageView.setLayoutParams(new GridView.LayoutParams(150, 209));
-            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(4, 4, 4, 4);
-            //imageView.setPadding(0, 0, 0, 0);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(6, 6, 6, 6);
         } 
         else 
         {
             imageView = (ImageView) convertView;
         }
         
-        imageView.setImageResource(_cardList.get(position));
-        
-     	
     	
     	if(position < _iceTracker)
     	{
@@ -81,27 +77,20 @@ public class ImageAdapter extends BaseAdapter
             imageView.setImageMatrix(matrix);
             */
     		
-    		Matrix mat = new Matrix();
+    		
     		Bitmap bMap = BitmapFactory.decodeResource(_context.getResources(), _cardList.get(position));
-    		mat.postRotate(90);
     		Bitmap bMapRotate = Bitmap.createBitmap(bMap, 0, 0,bMap.getWidth(),bMap.getHeight(), mat, true);
     		imageView.setImageBitmap(bMapRotate);
     		
-    		
-    		
-    		//imageView.setRotation(90f);
             imageView.setLayoutParams(new GridView.LayoutParams(150, 108));
-    		//imageView.setLayoutParams(new GridView.LayoutParams(108, 150));
-    		//imageView.setLayoutParams(new GridView.LayoutParams(75, 104));
-    		imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
     	}
     	else
     	{
     		// Not Tapped 
-    		imageView.setRotation(0f);
+    		imageView.setImageResource(_cardList.get(position));
+    		//imageView.setRotation(0f);
     		//imageView.setLayoutParams(new GridView.LayoutParams(150, 209));
     		imageView.setLayoutParams(new GridView.LayoutParams(108, 150));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
     	}
     	
     	if(_cardList.get(position) == R.drawable.nothing)
@@ -118,6 +107,7 @@ public class ImageAdapter extends BaseAdapter
         return imageView;
     }
     
+    Matrix mat = new Matrix();
     private Context _context;
     private ArrayList<Integer> _cardList;
     private int _iceTracker = 0;
