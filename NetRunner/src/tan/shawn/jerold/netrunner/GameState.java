@@ -81,6 +81,37 @@ public class GameState
 			_server.add(new Server()); // HQ
 			_server.add(new Server()); // 1st Remote
 		}
+		
+	    public int GetMaxIce(int page)
+	    {
+	    	int maxIce = 0;
+	    	
+			for(int i=0; i<3; i++)
+			{
+				if((page*3 + i) < _server.size()) // if server exists
+				{
+					maxIce = Math.max(maxIce, _server.get(page*3 + i)._ice.size());
+				}
+			}
+			
+	        return maxIce;
+	    }
+	    
+	    public int GetMaxInstalls(int page)
+	    {
+	    	int maxInstalls = 0;
+	    	
+	    	for(int i=0; i<3; i++)
+			{
+				if((page*3 + i) < _server.size()) // if server exists
+				{
+					maxInstalls = Math.max(maxInstalls, _server.get(page*3 + i)._installs.size());
+				}
+			}
+
+			return maxInstalls;
+	    }
+		
 	}
 	public CorpState _corpState = new CorpState();
 	
@@ -117,4 +148,13 @@ public class GameState
 		
 	}
 	public RunnerState _runnerState = new RunnerState();
+	
+	public void reset()
+	{
+		for(int i=0; i<_corpState._server.size(); i++)
+		{
+			_corpState._server.get(i)._ice.clear();
+			_corpState._server.get(i)._installs.clear();
+		}
+	}
 }

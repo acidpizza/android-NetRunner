@@ -5,13 +5,10 @@ import images.TouchImageView;
 
 import java.util.ArrayList;
 
-import cards.Card;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +16,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import cards.Card;
 
 public class CorpFragment extends Fragment
 {	
@@ -54,10 +52,8 @@ public class CorpFragment extends Fragment
     
     ImageAdapter imageAdapterServers;
     
-    int _page = 0;
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
 	int _iceTracker = 0;
-	GameState _gameState = new GameState();
 	
 	
 	@Override
@@ -86,7 +82,7 @@ public class CorpFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 	    getSettings(savedInstanceState);
-	    setupBoard();   
+	    updateUI();   
 	}
 	
 	private boolean getSettings(Bundle savedInstanceState)
@@ -94,27 +90,25 @@ public class CorpFragment extends Fragment
 		if(savedInstanceState==null)
 		{
 			// First creation
+			Bundle b = getArguments(); 
+			_cardList = b.getIntegerArrayList("CARDLIST");
+			_iceTracker = b.getInt("ICETRACKER");
 			return true;
 		}
 		
 		// Restart of activity
 		// Fill up gameState with details from savedInstanceState
+		Bundle b = getArguments(); 
+		_cardList = b.getIntegerArrayList("CARDLIST");
+		_iceTracker = b.getInt("ICETRACKER");
+		
 		
 		return true;
 	}
 	
-	private void setupBoard()
+	public void updateUI()
 	{	
-		Card.GetDeck(_gameState._corpState._server.get(0)._ice, 1);
-		Card.GetDeck(_gameState._corpState._server.get(1)._ice, 3);
-		Card.GetDeck(_gameState._corpState._server.get(2)._ice, 2);
-		
-		Card.GetDeck(_gameState._corpState._server.get(0)._installs, 2);
-		Card.GetDeck(_gameState._corpState._server.get(1)._installs, 3);
-		Card.GetDeck(_gameState._corpState._server.get(2)._installs, 4);
-		
-		
-		updateCardList();
+		//TODO: use notify adapter instead of creating new adapter for every updateUI
 		
 		final GridView gridviewServer = (GridView) getActivity().findViewById(R.id.gridViewServer);
 		imageAdapterServers = new ImageAdapter(getActivity(), _cardList, _iceTracker);
@@ -138,87 +132,4 @@ public class CorpFragment extends Fragment
 	        }
 	    });	    
 	}	
-	
-	void updateCardList()
-	{
-		_cardList.clear();
-		
-		int maxIce = 0;
-		int maxInstalls = 0;
-		
-		// Ice List
-		maxIce = GetMaxIce();
-
-		for(int i=( maxIce - 1 ); i>=0; i--)
-		{
-			for(int j=0; j<3; j++)
-			{
-				if(i < _gameState._corpState._server.get(_page + j)._ice.size())
-				{
-					_cardList.add(_gameState._corpState._server.get(_page + j)._ice.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-			}
-		}
-		_iceTracker = _cardList.size(); // point to the index of first non-ice
-	
-		if(_page == 0)
-		{
-			_cardList.add(R.drawable.nothing); 		// archives
-			_cardList.add(R.drawable.corp_back);	// R&D
-			_cardList.add(R.drawable.wey_hq1);		// HQ
-		}
-		
-		// Installs List
-		maxInstalls = GetMaxInstalls();
-		
-		for(int i = 0; i < maxInstalls; i++)
-		{
-			for(int j=0; j<3; j++)
-			{
-				// Installs for Archives
-				if(i < _gameState._corpState._server.get(_page + j)._installs.size())
-				{
-					_cardList.add(_gameState._corpState._server.get(_page + j)._installs.get(i)._drawableID);
-				}
-				else
-				{
-					_cardList.add(R.drawable.nothing);
-				}
-			}			
-		}
-	}
-	
-    private int GetMaxIce()
-    {
-    	int maxIce = 0;
-    	
-		for(int i=0; i<3; i++)
-		{
-			if((_page*3 + i) < _gameState._corpState._server.size()) // if server exists
-			{
-				maxIce = Math.max(maxIce, _gameState._corpState._server.get(_page*3 + i)._ice.size());
-			}
-		}
-		
-        return maxIce;
-    }
-    
-    private int GetMaxInstalls()
-    {
-    	int maxInstalls = 0;
-    	
-    	for(int i=0; i<3; i++)
-		{
-			if((_page*3 + i) < _gameState._corpState._server.size()) // if server exists
-			{
-				maxInstalls = Math.max(maxInstalls, _gameState._corpState._server.get(_page*3 + i)._installs.size());
-			}
-		}
-
-		return maxInstalls;
-    }
 }
