@@ -40,8 +40,10 @@ public class NetRunner extends Activity {
     	
     	intentFrag.putExtra("SIDE", side);
     	startActivity(intentFrag);
-    	
-    	
+
+
+
+
     	/*
     	ToggleButton toggle = (ToggleButton)findViewById(R.id.toggleSide);
 

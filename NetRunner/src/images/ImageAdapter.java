@@ -107,6 +107,12 @@ public class ImageAdapter extends BaseAdapter
         return imageView;
     }
     
+    public void SetIceTracker(int iceTracker)
+    {
+    	_iceTracker = iceTracker;
+    }
+    
+    
     Matrix mat = new Matrix();
     private Context _context;
     private ArrayList<Integer> _cardList;

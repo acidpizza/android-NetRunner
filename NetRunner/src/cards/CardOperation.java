@@ -90,7 +90,7 @@ class CardOperation_ScorchedEarth extends CardOperation
 	{
 		if(gameState._runnerState._tags > 0 && !gameState._corpState.PayCredits(_cost))
 		{
-			gameState._runnerState.DealMeatDamage(4);
+			gameState._runnerState.TakeMeatDamage(4);
 			return true;
 		}
 		else

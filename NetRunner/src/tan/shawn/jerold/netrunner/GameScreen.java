@@ -18,7 +18,7 @@ import android.widget.Toast;
 import cards.Card;
 
 public class GameScreen extends Activity implements CorpFragment.OnItemSelectedListener 
-{
+{	
 	//@Override
 	public void onItemSelected(String msg) 
 	{
@@ -92,10 +92,9 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	// ----------------------------------------------------------------------------------
 	private String _side;
 	GameState _gameState = new GameState();
-	CorpFragment _corpFragment;
+	CorpFragment _corpFragment = new CorpFragment();
 	RunnerFragment _runnerFragment = new RunnerFragment();
 	
-	int _page = 0;
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
 	int _iceTracker = 0;
 
@@ -108,6 +107,7 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	  // This bundle will be passed to onCreate if the process is
 	  // killed and restarted.
 	  
+	  savedInstanceState.putSerializable("GAMESTATE", _gameState);
 	  savedInstanceState.putString("SIDE", _side);
 	}
 
@@ -139,7 +139,7 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	
 	// Initialise settings
 	private boolean setupGame(Bundle savedInstanceState)
-	{
+	{	
 		if(savedInstanceState == null)
 		{
 			// New game. Start from scratch
@@ -198,31 +198,43 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	// Initialise Corp-specific settings
 	private boolean setupCorp(Bundle savedInstanceState)
 	{	
-		// update _cardList and _iceTracker
-		InitialiseBoard();
-		UpdateCardList();
-		
 		if(savedInstanceState == null)
 		{	
 			// New game. Start from scratch.
-			_corpFragment = new CorpFragment();
+
+			// Setup initial layout
+			InitialiseBoard(); 
+			
+			// Update the cardList from _gameState
+			_corpFragment.UpdateCardList(_gameState); 
 			
 			// Send _cardList and iceTracker to _corpFragment as an argument
-			Bundle b = new Bundle();
-			b.putIntegerArrayList("CARDLIST", _cardList);
-			b.putInt("ICETRACKER", _iceTracker);
-			_corpFragment.setArguments(b);
+			//Bundle b = new Bundle();
+			//b.putIntegerArrayList("CARDLIST", _cardList);
+			//b.putInt("ICETRACKER", _iceTracker);
+			//_corpFragment.setArguments(b);
 			
 			// Start the fragment 
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			ft.add(R.id.SideFragmentHolder, _corpFragment);
+			ft.add(R.id.SideFragmentHolder, _corpFragment, "CORPFRAGMENT");
 			ft.commit();
 		}
 		else
 		{
 			// Resuming from stop.
+			_gameState = (GameState)savedInstanceState.getSerializable("GAMESTATE");
+			
 			// Recover the handle to _corpFragment
-			_corpFragment = (CorpFragment) getFragmentManager().findFragmentById(R.id.SideFragmentHolder);
+			_corpFragment = (CorpFragment) getFragmentManager().findFragmentByTag("CORPFRAGMENT");
+			
+			if(_corpFragment == null)
+			{
+				Log.e("setupCorp", "corpFragment null");
+			}
+			else
+			{
+				Log.e("setupCorp", "corpFragment not null");
+			}
 			
 			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();	
 		}
@@ -235,41 +247,42 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	{
 		Log.e("1","Switch");
 		if(_side.equals("Runner"))
-		{
-			_page = 0;
-			UpdateCardList();
-			_corpFragment._cardList = _cardList;
-			_corpFragment._iceTracker = _iceTracker;
-			_corpFragment.updateUI();
-			_side="Corporation";
-			
-			/*
+		{	
 			_side="Corporation";
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.replace(R.id.SideFragmentHolder, _corpFragment);
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
-			*/
 		}
 		else if(_side.equals("Corporation"))
 		{
-			_page = 1;
-			UpdateCardList();
-			_corpFragment._cardList = _cardList;
-			_corpFragment._iceTracker = _iceTracker;
-			_corpFragment.updateUI();
-			_side="Runner";
-			
-			/*
 			_side="Runner";
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.replace(R.id.SideFragmentHolder, _runnerFragment);
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
-			*/
+			
 		}
 	}
 
+	// Switch between Pages
+	public void SwitchPage(View view)
+	{
+		Log.e("1","Switch");
+		if(_gameState._corpState._page == 0)
+		{	
+			_gameState._corpState._page = 1;
+			
+			_corpFragment.updateUI(_gameState);
+		}
+		else if(_gameState._corpState._page == 1)
+		{		
+			_gameState._corpState._page = 0;
+			
+			_corpFragment.updateUI(_gameState);
+		}
+	}
+	
 	// Add the starting cards to _gameState and updateCardList.
 	private void InitialiseBoard()
 	{
@@ -285,74 +298,5 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 		Card.GetDeck(_gameState._corpState._server.get(2)._installs, 4);
 		Card.GetDeck(_gameState._corpState._server.get(3)._installs, 3);
 	}
-	
-	// Obtain _cardList and _iceTracker from _gameState and _page.
-	private void UpdateCardList()
-	{
-		_cardList.clear();
 		
-		int maxIce = 0;
-		int maxInstalls = 0;
-		
-		// Ice List
-		maxIce = _gameState._corpState.GetMaxIce(_page);
-
-		for(int i=( maxIce - 1 ); i>=0; i--) // for each ice row
-		{
-			for(int j=0; j<3; j++) // for each server in the page
-			{
-				if(_page*3 + j >= _gameState._corpState._server.size())
-				{
-					// Server does not exist
-					_cardList.add(R.drawable.nothing);
-				}
-				else
-				{
-					if(i < _gameState._corpState._server.get(_page*3 + j)._ice.size()) // server exists and ice exists
-					{
-						_cardList.add(_gameState._corpState._server.get(_page*3 + j)._ice.get(i)._drawableID);
-					}
-					else // sever exists but ice does not exist
-					{
-						_cardList.add(R.drawable.nothing);
-					}
-				}
-			}
-		}
-		_iceTracker = _cardList.size(); // point to the index of first non-ice
-	
-		if(_page == 0)
-		{
-			_cardList.add(R.drawable.nothing); 		// archives
-			_cardList.add(R.drawable.corp_back);	// R&D
-			_cardList.add(R.drawable.wey_hq1);		// HQ
-		}
-		
-		// Installs List
-		maxInstalls = _gameState._corpState.GetMaxInstalls(_page);
-		
-		for(int i = 0; i < maxInstalls; i++)
-		{
-			for(int j=0; j<3; j++)
-			{
-				if(_page*3 + j >= _gameState._corpState._server.size())
-				{
-					// Server does not exist
-					_cardList.add(R.drawable.nothing);
-				}
-				else
-				{
-					if(i < _gameState._corpState._server.get(_page*3 + j)._installs.size()) // server and install exists
-					{
-						_cardList.add(_gameState._corpState._server.get(_page*3 + j)._installs.get(i)._drawableID);
-					}
-					else // server exists but install does not exist
-					{
-						_cardList.add(R.drawable.nothing);
-					}
-				}
-			}			
-		}
-	}
-	
 }

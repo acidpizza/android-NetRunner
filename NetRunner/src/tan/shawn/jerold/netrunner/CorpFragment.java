@@ -16,7 +16,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import cards.Card;
 
 public class CorpFragment extends Fragment
 {	
@@ -50,21 +49,20 @@ public class CorpFragment extends Fragment
 	
 	// ----------------------------------------------------------------------------------------------
     
-    ImageAdapter imageAdapterServers;
+    private ImageAdapter _imageAdapterServers;
     
-	ArrayList<Integer> _cardList = new ArrayList<Integer>();
-	int _iceTracker = 0;
-	
-	
+	private ArrayList<Integer> _cardList = new ArrayList<Integer>();
+	private int _iceTracker = 0;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
 	    View view = inflater.inflate(R.layout.fragment_corp, container, false);
 	    
+	    /* 
 	    //view.findViewById(R.id.imageView1).setOnTouchListener(new TouchListener_DragAtTouch());
 	    //view.findViewById(R.id.Header).setOnDragListener(new MyDragListener());
-	    
-	    /*
+	     
 	    view.findViewById(R.id.imageView1).setOnClickListener(new View.OnClickListener() 
 	    {
 	        @Override
@@ -74,46 +72,20 @@ public class CorpFragment extends Fragment
 	        }
 	      });
 	    */
-	    
+	 
 	    return view;		
 	}
 	
 	public void onActivityCreated (Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-	    getSettings(savedInstanceState);
-	    updateUI();   
-	}
-	
-	private boolean getSettings(Bundle savedInstanceState)
-	{
-		if(savedInstanceState==null)
-		{
-			// First creation
-			Bundle b = getArguments(); 
-			_cardList = b.getIntegerArrayList("CARDLIST");
-			_iceTracker = b.getInt("ICETRACKER");
-			return true;
-		}
-		
-		// Restart of activity
-		// Fill up gameState with details from savedInstanceState
-		Bundle b = getArguments(); 
-		_cardList = b.getIntegerArrayList("CARDLIST");
-		_iceTracker = b.getInt("ICETRACKER");
-		
-		
-		return true;
-	}
-	
-	public void updateUI()
-	{	
-		//TODO: use notify adapter instead of creating new adapter for every updateUI
+	    
+		getSettings(savedInstanceState);
 		
 		final GridView gridviewServer = (GridView) getActivity().findViewById(R.id.gridViewServer);
-		imageAdapterServers = new ImageAdapter(getActivity(), _cardList, _iceTracker);
-		gridviewServer.setAdapter(imageAdapterServers);
-
+		_imageAdapterServers = new ImageAdapter(getActivity(), _cardList, _iceTracker);
+		gridviewServer.setAdapter(_imageAdapterServers);
+		
 		// Allow viewing of card in dialog on click
 	    gridviewServer.setOnItemClickListener(new OnItemClickListener() 
 	    {
@@ -130,6 +102,115 @@ public class CorpFragment extends Fragment
 				dialog.show();
 				dialog.getWindow().setLayout(390, 544);	
 	        }
-	    });	    
+	    });	 
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) 
+	{
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  
+	  // On restart, save the existing _cardList and _iceTracker 
+	  savedInstanceState.putIntegerArrayList("CARDLIST", _cardList);
+	  savedInstanceState.putInt("ICETRACKER", _iceTracker);
+	}
+
+	
+	private boolean getSettings(Bundle savedInstanceState)
+	{	
+		if(savedInstanceState!=null)
+		{
+			// Restart of activity
+			_cardList = savedInstanceState.getIntegerArrayList("CARDLIST");
+			_iceTracker = savedInstanceState.getInt("ICETRACKER");
+		}
+	
+		return true;
+	}
+	
+	// Update UI from main activity
+	public void updateUI(GameState gameState)
+	{	
+		// Update _cardList and _iceTracker from _gameState
+		UpdateCardList(gameState);
+
+		_imageAdapterServers.SetIceTracker(_iceTracker);
+		
+		// Update the GridView
+		_imageAdapterServers.notifyDataSetChanged();
+	}	
+	
+	// Update _cardList and _iceTracker only from _gameState.
+	// Do this for restarting due to rotation when fragment has not been created yet.
+	public void UpdateCardList(GameState gameState)
+	{
+		int page = gameState._corpState._page;
+		_cardList.clear();
+		
+		int maxIce = 0;
+		int maxInstalls = 0;
+		
+		// Ice List
+		maxIce = gameState._corpState.GetMaxIce(page);
+
+		for(int i=( maxIce - 1 ); i>=0; i--) // for each ice row
+		{
+			for(int j=0; j<3; j++) // for each server in the page
+			{
+				if(page*3 + j >= gameState._corpState._server.size())
+				{
+					// Server does not exist
+					_cardList.add(R.drawable.nothing);
+				}
+				else
+				{
+					if(i < gameState._corpState._server.get(page*3 + j)._ice.size()) // server exists and ice exists
+					{
+						_cardList.add(gameState._corpState._server.get(page*3 + j)._ice.get(i)._drawableID);
+					}
+					else // sever exists but ice does not exist
+					{
+						_cardList.add(R.drawable.nothing);
+					}
+				}
+			}
+		}
+		_iceTracker = _cardList.size(); // point to the index of first non-ice
+	
+		if(page == 0)
+		{
+			_cardList.add(R.drawable.nothing); 		// archives
+			_cardList.add(R.drawable.corp_back);	// R&D
+			_cardList.add(R.drawable.wey_hq1);		// HQ
+		}
+		
+		// Installs List
+		maxInstalls = gameState._corpState.GetMaxInstalls(page);
+		
+		for(int i = 0; i < maxInstalls; i++)
+		{
+			for(int j=0; j<3; j++)
+			{
+				if(page*3 + j >= gameState._corpState._server.size())
+				{
+					// Server does not exist
+					_cardList.add(R.drawable.nothing);
+				}
+				else
+				{
+					if(i < gameState._corpState._server.get(page*3 + j)._installs.size()) // server and install exists
+					{
+						_cardList.add(gameState._corpState._server.get(page*3 + j)._installs.get(i)._drawableID);
+					}
+					else // server exists but install does not exist
+					{
+						_cardList.add(R.drawable.nothing);
+					}
+				}
+			}			
+		}
 	}	
 }

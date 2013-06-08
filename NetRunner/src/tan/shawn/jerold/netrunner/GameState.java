@@ -1,11 +1,17 @@
 package tan.shawn.jerold.netrunner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import cards.Card;
 
-public class GameState 
+public class GameState implements Serializable
 {
+	/**
+	 * Needed for implmenting Serializable
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public GameState()
 	{
 		
@@ -58,9 +64,11 @@ public class GameState
 	
 	public class CorpState extends SideState
 	{	
+		public int _page;
+		
 		public ArrayList<Card> _discards;
-		public int _numRevealed;
-		public int _numNotRevealed;
+		public int _numDiscardsRevealed;
+		public int _numDiscardsNotRevealed;
 		
 		public ArrayList<Card> _deck;
 		
@@ -137,7 +145,7 @@ public class GameState
 		
 		public int _maxHandSize;
 		
-		public void DealMeatDamage(int damage)
+		public void TakeMeatDamage(int damage)
 		{
 			//TODO: Meat Damage Implementation
 			// Check meat damage reduction
