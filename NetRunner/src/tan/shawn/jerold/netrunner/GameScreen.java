@@ -133,13 +133,17 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
         Button frame = (Button) findViewById(R.id.button1);
         frame.setOnTouchListener(gestureListener);
 		
-		
-		setupGame(savedInstanceState);
+        // Retrieve values from previous activity or from restored state
+        if(GetValuesFromIntent(savedInstanceState))
+		{
+        	// Initialise GameState
+        	SetupGame(savedInstanceState);
+		}
 	}
 	
-	// Initialise settings
-	private boolean setupGame(Bundle savedInstanceState)
-	{	
+	// Retrieve values from previous activity or from restored state
+	private boolean GetValuesFromIntent(Bundle savedInstanceState)
+	{
 		if(savedInstanceState == null)
 		{
 			// New game. Start from scratch
@@ -147,7 +151,7 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 			Bundle extra = getIntent().getExtras();
 			if(extra == null)
 			{
-				Log.e("SetupGame","Extra is null");
+				Log.e("GetValuesFromIntent","Extra is null");
 				return false;
 			}
 			
@@ -160,84 +164,70 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 			// Get parameters from savedInstanceState
 			_side = savedInstanceState.getString("SIDE");
 		}
-		
-		// Implement side-specific settings
-		if(_side.equals("Runner"))
-		{   
-		    return setupRunner(savedInstanceState);
-		}
-		else if(_side.equals("Corporation"))
-		{
-			return setupCorp(savedInstanceState);
-		}
-		else
-		{
-			Log.e("SetupGame","Cannot determine side: " + _side);
-			return false;
-		}
-	
-	}
-	
-	// Initialise Runner-specific settings 
-	private boolean setupRunner(Bundle savedInstanceState)
-	{
-		if(savedInstanceState == null)
-		{
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			ft.add(R.id.SideFragmentHolder, _runnerFragment);
-			ft.commit();
-		}
-		else
-		{
-			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();
-		}
-		
 		return true;
 	}
 	
-	// Initialise Corp-specific settings
-	private boolean setupCorp(Bundle savedInstanceState)
-	{	
+	// Populate GameState and Fragments
+	private boolean SetupGame(Bundle savedInstanceState)
+	{			
 		if(savedInstanceState == null)
 		{	
 			// New game. Start from scratch.
 
-			// Setup initial layout
+			// Setup _gameState with initial layout
 			InitialiseBoard(); 
-			
-			// Update the cardList from _gameState
-			_corpFragment.UpdateCardList(_gameState); 
-			
-			// Send _cardList and iceTracker to _corpFragment as an argument
-			//Bundle b = new Bundle();
-			//b.putIntegerArrayList("CARDLIST", _cardList);
-			//b.putInt("ICETRACKER", _iceTracker);
-			//_corpFragment.setArguments(b);
-			
-			// Start the fragment 
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			ft.add(R.id.SideFragmentHolder, _corpFragment, "CORPFRAGMENT");
-			ft.commit();
 		}
 		else
 		{
-			// Resuming from stop.
+			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();
+			
+			// Resuming from stop. Get _gameState from savedInstanceState
 			_gameState = (GameState)savedInstanceState.getSerializable("GAMESTATE");
+		}
 			
-			// Recover the handle to _corpFragment
-			_corpFragment = (CorpFragment) getFragmentManager().findFragmentByTag("CORPFRAGMENT");
-			
-			if(_corpFragment == null)
+		// Update the cardList from _gameState
+		_corpFragment.UpdateCardList(_gameState);
+		_runnerFragment.UpdateCardList(_gameState); 
+		
+		// Start the fragment 
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		
+		if(getFragmentManager().findFragmentById(R.id.SideFragmentHolder) == null)
+		{
+			// Fragment does not exist. Add it.
+			if(_side.equals("Corporation"))
 			{
-				Log.e("setupCorp", "corpFragment null");
+				ft.add(R.id.SideFragmentHolder, _corpFragment);
+			}
+			else if(_side.equals("Runner"))
+			{
+				ft.add(R.id.SideFragmentHolder, _runnerFragment);
 			}
 			else
 			{
-				Log.e("setupCorp", "corpFragment not null");
+				Log.e("SetupGame", "Cannot identify side :" + _side);
+				return false;
 			}
-			
-			Toast.makeText(getApplicationContext(), "Not recreating fragment", Toast.LENGTH_SHORT).show();	
 		}
+		else
+		{
+			// Fragment currently exists. Replace it.
+			if(_side.equals("Corporation"))
+			{
+				ft.replace(R.id.SideFragmentHolder, _corpFragment);
+			}
+			else if(_side.equals("Runner"))
+			{
+				ft.replace(R.id.SideFragmentHolder, _runnerFragment);
+			}
+			else
+			{
+				Log.e("SetupGame", "Cannot identify side :" + _side);
+				return false;
+			}
+		}
+		
+		ft.commit();
 		
 		return true;
 	}
@@ -268,18 +258,29 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	// Switch between Pages
 	public void SwitchPage(View view)
 	{
-		Log.e("1","Switch");
-		if(_gameState._corpState._page == 0)
-		{	
-			_gameState._corpState._page = 1;
-			
-			_corpFragment.updateUI(_gameState);
+		Log.e("1","Page");
+		
+		if(_side.equals("Corporation"))
+		{
+			if(_gameState._corpState._page == 0)
+			{	
+				_gameState._corpState._page = 1;
+				
+				_corpFragment.updateUI(_gameState);
+			}
+			else if(_gameState._corpState._page == 1)
+			{		
+				_gameState._corpState._page = 0;
+				
+				_corpFragment.updateUI(_gameState);
+			}
 		}
-		else if(_gameState._corpState._page == 1)
-		{		
-			_gameState._corpState._page = 0;
-			
-			_corpFragment.updateUI(_gameState);
+		else if(_side.equals("Runner"))
+		{
+			Card.GetRunnerDeck(_gameState._runnerState._rigResources, 1);
+			Card.GetRunnerDeck(_gameState._runnerState._rigHardware, 2);
+			Card.GetRunnerDeck(_gameState._runnerState._rigPrograms, 3);
+			_runnerFragment.updateUI(_gameState);
 		}
 	}
 	
@@ -288,15 +289,21 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	{
 		_gameState.reset();
 		
-		Card.GetDeck(_gameState._corpState._server.get(0)._ice, 1);
-		Card.GetDeck(_gameState._corpState._server.get(1)._ice, 3);
-		Card.GetDeck(_gameState._corpState._server.get(2)._ice, 2);
-		Card.GetDeck(_gameState._corpState._server.get(3)._ice, 2);
+		// Initialise Corp
+		Card.GetCorpDeck(_gameState._corpState._servers.get(0)._ice, 1);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(1)._ice, 3);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(2)._ice, 2);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(3)._ice, 2);
 		
-		Card.GetDeck(_gameState._corpState._server.get(0)._installs, 2);
-		Card.GetDeck(_gameState._corpState._server.get(1)._installs, 3);
-		Card.GetDeck(_gameState._corpState._server.get(2)._installs, 4);
-		Card.GetDeck(_gameState._corpState._server.get(3)._installs, 3);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(0)._installs, 2);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(1)._installs, 3);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(2)._installs, 4);
+		Card.GetCorpDeck(_gameState._corpState._servers.get(3)._installs, 3);
+		
+		// Initialise Runner
+		Card.GetRunnerDeck(_gameState._runnerState._rigResources, 1);
+		Card.GetRunnerDeck(_gameState._runnerState._rigHardware, 2);
+		Card.GetRunnerDeck(_gameState._runnerState._rigPrograms, 3);
 	}
 		
 }

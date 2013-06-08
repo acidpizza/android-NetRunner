@@ -1,6 +1,6 @@
 package tan.shawn.jerold.netrunner;
 
-import images.ImageAdapter;
+import images.RunnerAdapter;
 import images.TouchImageView;
 
 import java.util.ArrayList;
@@ -13,13 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 public class RunnerFragment extends Fragment
 {
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
-
+	RunnerAdapter _runnerAdapter; 
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
@@ -30,62 +31,102 @@ public class RunnerFragment extends Fragment
 	public void onActivityCreated (Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		GameState boardSettings = new GameState();
-		getSettings(savedInstanceState, boardSettings);
-		setupBoard(boardSettings);
-	}
-
-	private boolean getSettings(Bundle savedInstanceState, GameState boardSettings)
-	{
-		if(savedInstanceState==null)
-		{
-			return true;
-		}
-
-		return true;
-	}
-
-	private void setupBoard(GameState boardSettings)
-	{	
-		final GridView gridview = (GridView) getActivity().findViewById(R.id.gridView1);
-
-		Integer[] cards = {
-				R.drawable.rneutral_event1,R.drawable.rneutral_event2,
-				R.drawable.rneutral_program1, R.drawable.rneutral_resource1,
-				R.drawable.rneutral_resource2, R.drawable.sha_id1,
-				R.drawable.sha_event1, R.drawable.sha_event2,
-				R.drawable.sha_event3, R.drawable.sha_event4,
-				R.drawable.sha_hardware1, R.drawable.sha_hardware2,
-				R.drawable.sha_hardware3, R.drawable.sha_hardware4,
-				R.drawable.sha_program1, R.drawable.sha_program2,
-				R.drawable.sha_program3, R.drawable.sha_program4,
-				R.drawable.sha_program5, R.drawable.sha_resource1,
-				R.drawable.sha_resource2, R.drawable.runner_back
-		};
-
-		for(int i=0; i<cards.length; i++)
-		{
-			_cardList.add(cards[i]);
-		}
 		
-		gridview.setAdapter(new ImageAdapter(getActivity(), _cardList, 0));
-
-		gridview.setOnItemClickListener(new OnItemClickListener() 
-		{
-			public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
-			{
-				// custom dialog	        	
-				Dialog dialog = new Dialog(getActivity());
+		getSettings(savedInstanceState);
+		
+		final GridView gridviewRunner = (GridView) getActivity().findViewById(R.id.gridViewRunner);
+		_runnerAdapter = new RunnerAdapter(getActivity(), _cardList);
+		gridviewRunner.setAdapter(_runnerAdapter);
+		
+		// Allow viewing of card in dialog on click
+	    gridviewRunner.setOnItemClickListener(new OnItemClickListener()
+	    {
+	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
+	        {
+	            // custom dialog	        	
+	        	Dialog dialog = new Dialog(getActivity());
 				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog.setContentView(R.layout.card_viewer);
-
+	        	dialog.setContentView(R.layout.card_viewer);
+		
 				TouchImageView view = (TouchImageView) dialog.findViewById(R.id.cardView);
-				view.setImageResource((int) gridview.getItemIdAtPosition(position));
-
+	            view.setImageResource((int) gridviewRunner.getItemIdAtPosition(position));
+				
 				dialog.show();
 				dialog.getWindow().setLayout(390, 544);	
-			}
-		});
-
+	        }
+	    });	 
+		
 	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) 
+	{
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  
+	  // On restart, save the existing _cardList and _iceTracker 
+	  savedInstanceState.putIntegerArrayList("CARDLIST", _cardList);
+	}
+
+	private boolean getSettings(Bundle savedInstanceState)
+	{	
+		if(savedInstanceState!=null)
+		{
+			// Restart of activity
+			_cardList = savedInstanceState.getIntegerArrayList("CARDLIST");
+		}
+	
+		return true;
+	}
+	
+	// Update UI from main activity
+	public void updateUI(GameState gameState)
+	{	
+		// Update _cardList and _iceTracker from _gameState
+		UpdateCardList(gameState);
+		
+		// Update the GridView
+		_runnerAdapter.notifyDataSetChanged();
+	}	
+	
+	// Update _cardList and _iceTracker only from _gameState.
+	// Do this for restarting due to rotation when fragment has not been created yet.
+	public void UpdateCardList(GameState gameState)
+	{
+		_cardList.clear();
+
+		int maxRig = gameState._runnerState.GetMaxRig();
+		
+		for(int i = 0; i < maxRig; i++)
+		{
+			if(i < gameState._runnerState._rigResources.size()) // resource card exists
+			{
+				_cardList.add(gameState._runnerState._rigResources.get(i)._drawableID);
+			}
+			else // resource card does not exist
+			{
+				_cardList.add(R.drawable.nothing);
+			}
+			
+			if(i < gameState._runnerState._rigHardware.size()) // hardware card exists
+			{
+				_cardList.add(gameState._runnerState._rigHardware.get(i)._drawableID);
+			}
+			else // hardware card does not exist
+			{
+				_cardList.add(R.drawable.nothing);
+			}
+			
+			if(i < gameState._runnerState._rigPrograms.size()) // program card exists
+			{
+				_cardList.add(gameState._runnerState._rigPrograms.get(i)._drawableID);
+			}
+			else // program card does not exist
+			{
+				_cardList.add(R.drawable.nothing);
+			}
+		}
+	}	
 }

@@ -1,6 +1,6 @@
 package tan.shawn.jerold.netrunner;
 
-import images.ImageAdapter;
+import images.CorpAdapter;
 import images.TouchImageView;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class CorpFragment extends Fragment
 	
 	// ----------------------------------------------------------------------------------------------
     
-    private ImageAdapter _imageAdapterServers;
+    private CorpAdapter _corpAdapter;
     
 	private ArrayList<Integer> _cardList = new ArrayList<Integer>();
 	private int _iceTracker = 0;
@@ -82,12 +82,12 @@ public class CorpFragment extends Fragment
 	    
 		getSettings(savedInstanceState);
 		
-		final GridView gridviewServer = (GridView) getActivity().findViewById(R.id.gridViewServer);
-		_imageAdapterServers = new ImageAdapter(getActivity(), _cardList, _iceTracker);
-		gridviewServer.setAdapter(_imageAdapterServers);
+		final GridView gridviewCorp = (GridView) getActivity().findViewById(R.id.gridViewCorp);
+		_corpAdapter = new CorpAdapter(getActivity(), _cardList, _iceTracker);
+		gridviewCorp.setAdapter(_corpAdapter);
 		
 		// Allow viewing of card in dialog on click
-	    gridviewServer.setOnItemClickListener(new OnItemClickListener() 
+	    gridviewCorp.setOnItemClickListener(new OnItemClickListener() 
 	    {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
 	        {
@@ -97,7 +97,7 @@ public class CorpFragment extends Fragment
 	        	dialog.setContentView(R.layout.card_viewer);
 		
 				TouchImageView view = (TouchImageView) dialog.findViewById(R.id.cardView);
-	            view.setImageResource((int) gridviewServer.getItemIdAtPosition(position));
+	            view.setImageResource((int) gridviewCorp.getItemIdAtPosition(position));
 				
 				dialog.show();
 				dialog.getWindow().setLayout(390, 544);	
@@ -137,12 +137,13 @@ public class CorpFragment extends Fragment
 		// Update _cardList and _iceTracker from _gameState
 		UpdateCardList(gameState);
 
-		_imageAdapterServers.SetIceTracker(_iceTracker);
+		_corpAdapter.SetIceTracker(_iceTracker);
 		
 		// Update the GridView
-		_imageAdapterServers.notifyDataSetChanged();
+		_corpAdapter.notifyDataSetChanged();
 	}	
 	
+	//TODO: put this function inside GameState as GameState.UpdateCardList(_cardList), return _iceTracker
 	// Update _cardList and _iceTracker only from _gameState.
 	// Do this for restarting due to rotation when fragment has not been created yet.
 	public void UpdateCardList(GameState gameState)
@@ -160,16 +161,16 @@ public class CorpFragment extends Fragment
 		{
 			for(int j=0; j<3; j++) // for each server in the page
 			{
-				if(page*3 + j >= gameState._corpState._server.size())
+				if(page*3 + j >= gameState._corpState._servers.size())
 				{
 					// Server does not exist
 					_cardList.add(R.drawable.nothing);
 				}
 				else
 				{
-					if(i < gameState._corpState._server.get(page*3 + j)._ice.size()) // server exists and ice exists
+					if(i < gameState._corpState._servers.get(page*3 + j)._ice.size()) // server exists and ice exists
 					{
-						_cardList.add(gameState._corpState._server.get(page*3 + j)._ice.get(i)._drawableID);
+						_cardList.add(gameState._corpState._servers.get(page*3 + j)._ice.get(i)._drawableID);
 					}
 					else // sever exists but ice does not exist
 					{
@@ -194,16 +195,16 @@ public class CorpFragment extends Fragment
 		{
 			for(int j=0; j<3; j++)
 			{
-				if(page*3 + j >= gameState._corpState._server.size())
+				if(page*3 + j >= gameState._corpState._servers.size())
 				{
 					// Server does not exist
 					_cardList.add(R.drawable.nothing);
 				}
 				else
 				{
-					if(i < gameState._corpState._server.get(page*3 + j)._installs.size()) // server and install exists
+					if(i < gameState._corpState._servers.get(page*3 + j)._installs.size()) // server and install exists
 					{
-						_cardList.add(gameState._corpState._server.get(page*3 + j)._installs.get(i)._drawableID);
+						_cardList.add(gameState._corpState._servers.get(page*3 + j)._installs.get(i)._drawableID);
 					}
 					else // server exists but install does not exist
 					{

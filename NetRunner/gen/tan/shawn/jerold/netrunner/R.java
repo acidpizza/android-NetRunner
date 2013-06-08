@@ -80,8 +80,8 @@ public final class R {
         public static final int button2=0x7f090002;
         public static final int button_start=0x7f090004;
         public static final int cardView=0x7f090005;
-        public static final int gridView1=0x7f090008;
-        public static final int gridViewServer=0x7f090007;
+        public static final int gridViewCorp=0x7f090007;
+        public static final int gridViewRunner=0x7f090008;
         public static final int toggleSide=0x7f090003;
     }
     public static final class layout {

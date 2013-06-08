@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/runner"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 	
     <GridView
-        android:id="@+id/gridView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:scrollbars="none"
-        android:verticalSpacing="10dp"
-    	android:horizontalSpacing="10dp"
-        android:numColumns="2" >
+        android:id="@+id/gridViewRunner"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:horizontalSpacing="6dp"
+        android:verticalSpacing="6dp" 
+        android:numColumns="3"
+        android:scrollbars="none">
     </GridView>
 
-</RelativeLayout>
+</LinearLayout>

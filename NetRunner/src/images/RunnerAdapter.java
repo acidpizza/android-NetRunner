@@ -4,24 +4,18 @@ import java.util.ArrayList;
 
 import tan.shawn.jerold.netrunner.R;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-public class ImageAdapter extends BaseAdapter 
+public class RunnerAdapter extends BaseAdapter 
 {
-    public ImageAdapter(Context c, ArrayList<Integer> cardList, int iceTracker) 
+    public RunnerAdapter(Context c, ArrayList<Integer> cardList) 
     {
         _context = c;
         _cardList = cardList;
-        _iceTracker = iceTracker;
-        
-        mat.postRotate(90);
     }
     
     
@@ -55,7 +49,8 @@ public class ImageAdapter extends BaseAdapter
         if (convertView == null) 
         {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(_context);
-                        
+          //imageView.setLayoutParams(new GridView.LayoutParams(150, 209));
+    		imageView.setLayoutParams(new GridView.LayoutParams(108, 150));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(6, 6, 6, 6);
         } 
@@ -64,40 +59,13 @@ public class ImageAdapter extends BaseAdapter
             imageView = (ImageView) convertView;
         }
         
+		// Not Tapped 
+		imageView.setImageResource(_cardList.get(position));
     	
-    	if(position < _iceTracker)
-    	{
-    		// Tapped
-    		
-    		/*
-    		Matrix matrix=new Matrix();
-            imageView.setScaleType(ScaleType.MATRIX);   //required
-            matrix.postScale(107.5f/225, 150f/314);
-            matrix.postRotate( 90f, 53.75f, 75f);
-            imageView.setImageMatrix(matrix);
-            */
-    		
-    		
-    		Bitmap bMap = BitmapFactory.decodeResource(_context.getResources(), _cardList.get(position));
-    		Bitmap bMapRotate = Bitmap.createBitmap(bMap, 0, 0,bMap.getWidth(),bMap.getHeight(), mat, true);
-    		imageView.setImageBitmap(bMapRotate);
-    		
-            imageView.setLayoutParams(new GridView.LayoutParams(150, 108));
-    	}
-    	else
-    	{
-    		// Not Tapped 
-    		imageView.setImageResource(_cardList.get(position));
-    		//imageView.setRotation(0f);
-    		//imageView.setLayoutParams(new GridView.LayoutParams(150, 209));
-    		imageView.setLayoutParams(new GridView.LayoutParams(108, 150));
-    	}
     	
     	if(_cardList.get(position) == R.drawable.nothing)
         {
         	imageView.setVisibility(View.INVISIBLE);
-        	//imageView.setClickable(false);
-        	//imageView.setEnabled(false);
         }
         else
         {
@@ -107,14 +75,6 @@ public class ImageAdapter extends BaseAdapter
         return imageView;
     }
     
-    public void SetIceTracker(int iceTracker)
-    {
-    	_iceTracker = iceTracker;
-    }
-    
-    
-    Matrix mat = new Matrix();
     private Context _context;
     private ArrayList<Integer> _cardList;
-    private int _iceTracker = 0;
 }

@@ -2,6 +2,8 @@ package cards;
 
 import java.util.ArrayList;
 
+import tan.shawn.jerold.netrunner.R;
+
 public class Card implements Comparable<Card>
 {
 	public int _drawableID; // graphic assigned to this card
@@ -26,7 +28,7 @@ public class Card implements Comparable<Card>
 	     return(_drawableID - anotherCard._drawableID);
 	}
 	
-	public static void GetDeck(ArrayList<Card> cardList, int number)
+	public static void GetCorpDeck(ArrayList<Card> cardList, int number)
 	{
 		if(number >= 1)
 			cardList.add(new CardOperation_AggressiveNegotiation());
@@ -39,6 +41,43 @@ public class Card implements Comparable<Card>
 		
 		if(number >= 4)
 			cardList.add(new CardOperation_ShipmentFromKaguya());
+	}
+	
+	public static void GetRunnerDeck(ArrayList<Card> cardList, int number)
+	{
+		if(number == 1)
+		{
+			Card tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.rneutral_resource1;
+			cardList.add(tmpCard);
+			
+			tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.sha_resource1;
+			cardList.add(tmpCard);
+		}
+			
+		
+		if(number == 2)
+		{
+			Card tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.sha_hardware1;
+			cardList.add(tmpCard);
+		}
+		
+		if(number == 3)
+		{
+			Card tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.rneutral_program1;
+			cardList.add(tmpCard);
+			
+			tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.sha_program1;
+			cardList.add(tmpCard);
+			
+			tmpCard = new Card();
+			tmpCard._drawableID = R.drawable.sha_program2;
+			cardList.add(tmpCard);	
+		}
 	}
 }
 

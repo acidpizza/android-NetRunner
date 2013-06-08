@@ -7,11 +7,6 @@ import cards.Card;
 
 public class GameState implements Serializable
 {
-	/**
-	 * Needed for implmenting Serializable
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public GameState()
 	{
 		
@@ -21,8 +16,8 @@ public class GameState implements Serializable
 	{
 		Corporation, Runner;
 	}
-	PlayerSide _playerSide; // Which side the player is on.
-	PlayerSide _playerTurn; // Which side's turn it is now.
+	PlayerSide _playerID; // Which side the player is on.
+	PlayerSide _curPlayerTurn; // Which side's turn it is now.
 	
 	public class SideState
 	{
@@ -80,14 +75,14 @@ public class GameState implements Serializable
 			public ArrayList<Card> _ice = new ArrayList<Card>();
 			public ArrayList<Card> _installs = new ArrayList<Card>();	
 		}
-		public ArrayList<Server> _server = new ArrayList<GameState.CorpState.Server>();
+		public ArrayList<Server> _servers = new ArrayList<GameState.CorpState.Server>();
 		
 		public CorpState()
 		{
-			_server.add(new Server()); // Archives
-			_server.add(new Server()); // R&D
-			_server.add(new Server()); // HQ
-			_server.add(new Server()); // 1st Remote
+			_servers.add(new Server()); // Archives
+			_servers.add(new Server()); // R&D
+			_servers.add(new Server()); // HQ
+			_servers.add(new Server()); // 1st Remote
 		}
 		
 	    public int GetMaxIce(int page)
@@ -96,9 +91,9 @@ public class GameState implements Serializable
 	    	
 			for(int i=0; i<3; i++)
 			{
-				if((page*3 + i) < _server.size()) // if server exists
+				if((page*3 + i) < _servers.size()) // if server exists
 				{
-					maxIce = Math.max(maxIce, _server.get(page*3 + i)._ice.size());
+					maxIce = Math.max(maxIce, _servers.get(page*3 + i)._ice.size());
 				}
 			}
 			
@@ -111,20 +106,36 @@ public class GameState implements Serializable
 	    	
 	    	for(int i=0; i<3; i++)
 			{
-				if((page*3 + i) < _server.size()) // if server exists
+				if((page*3 + i) < _servers.size()) // if server exists
 				{
-					maxInstalls = Math.max(maxInstalls, _server.get(page*3 + i)._installs.size());
+					maxInstalls = Math.max(maxInstalls, _servers.get(page*3 + i)._installs.size());
 				}
 			}
 
 			return maxInstalls;
 	    }
 		
+	    public void resetCorp()
+		{
+			for(int i=0; i<_corpState._servers.size(); i++)
+			{
+				_corpState._servers.get(i)._ice.clear();
+				_corpState._servers.get(i)._installs.clear();
+			}
+		}
 	}
 	public CorpState _corpState = new CorpState();
 	
 	public class RunnerState extends SideState
 	{
+		public ArrayList<Card> _rigResources = new ArrayList<Card>();
+		public ArrayList<Card> _rigHardware = new ArrayList<Card>();
+		public ArrayList<Card> _rigPrograms = new ArrayList<Card>();
+		
+		public ArrayList<Card> _heap = new ArrayList<Card>(); // Trash
+		public ArrayList<Card> _stack = new ArrayList<Card>(); // Draw
+		public ArrayList<Card> _grip = new ArrayList<Card>(); // Hand
+		
 		public int _tags = 0;
 		public void AddTags(int tags)
 		{
@@ -154,15 +165,35 @@ public class GameState implements Serializable
 			// Add card to archive
 		}
 		
+		
+	    public int GetMaxRig()
+	    {
+	    	int maxRig = 0;
+	    	
+			maxRig = Math.max(maxRig, _rigResources.size());
+			maxRig = Math.max(maxRig, _rigHardware.size());
+			maxRig = Math.max(maxRig, _rigPrograms.size());
+
+			return maxRig;
+	    }
+	    
+	    public void resetRunner()
+	    {
+	    	_rigResources.clear();
+	    	_rigHardware.clear();
+	    	_rigPrograms.clear();
+	    	
+	    	_heap.clear();
+	    	_stack.clear();
+	    	_grip.clear();
+	    }
+	    
 	}
 	public RunnerState _runnerState = new RunnerState();
 	
 	public void reset()
 	{
-		for(int i=0; i<_corpState._server.size(); i++)
-		{
-			_corpState._server.get(i)._ice.clear();
-			_corpState._server.get(i)._installs.clear();
-		}
+		_corpState.resetCorp();
+		_runnerState.resetRunner();
 	}
 }
