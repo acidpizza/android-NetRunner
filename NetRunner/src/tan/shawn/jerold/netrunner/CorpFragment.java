@@ -5,11 +5,15 @@ import images.TouchImageView;
 
 import java.util.ArrayList;
 
+import tan.shawn.jerold.netrunner.CorpFragment.CorpInterface.swipeDirection;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,24 +23,73 @@ import android.widget.GridView;
 
 public class CorpFragment extends Fragment
 {	
-	private OnItemSelectedListener listener;
+	// ----------------------------------------------------------------------------------
 	
-	public interface OnItemSelectedListener 
+    private GestureDetector gestureDetector;
+	
+	class SwipeOnGestureListener extends SimpleOnGestureListener 
 	{
-	    public void onItemSelected(String msg);
+		private final int SWIPE_MIN_DISTANCE = 120;
+	    private final int SWIPE_MAX_OFF_PATH = 250;
+	    private final int SWIPE_THRESHOLD_VELOCITY = 400;
+	    
+	    @Override
+	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) 
+	    {
+	        try 
+	        {
+	            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+	            {
+	                return false;
+	            }
+	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
+	            {
+	            	// Left Swipe
+	            	_corpListener.CorpPageChange(swipeDirection.Left);
+	                return true;
+	            }  
+	            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
+	            {
+	            	// Right Swipe
+	            	_corpListener.CorpPageChange(swipeDirection.Right);
+	                return true;
+	            }
+	        } 
+	        catch (Exception e) 
+	        {
+	            // nothing
+	        }
+	        return false;
+	    }
+	
+	}	
+	
+	// ----------------------------------------------------------------------------------
+	
+	
+	private CorpInterface _corpListener;
+	
+	public interface CorpInterface 
+	{
+		public enum swipeDirection
+		{
+			Left, Right
+		}
+
+	    public void CorpPageChange(swipeDirection direction);
 	}
 	
 	@Override
 	public void onAttach(Activity activity) 
 	{
 		super.onAttach(activity);
-		if (activity instanceof OnItemSelectedListener) 
+		if (activity instanceof CorpInterface) 
 		{
-			listener = (OnItemSelectedListener) activity;
+			_corpListener = (CorpInterface) activity;
 		} 
 		else 
 		{
-			throw new ClassCastException(activity.toString() + " must implemenet CorpFragment.OnItemSelectedListener");
+			throw new ClassCastException(activity.toString() + " must implement CorpFragment.CorpPageChangerInterface");
 		}
 	}
 
@@ -44,7 +97,7 @@ public class CorpFragment extends Fragment
 	public void onDetach() 
 	{
 		super.onDetach();
-		listener = null;
+		_corpListener = null;
 	}
 	
 	// ----------------------------------------------------------------------------------------------
@@ -76,6 +129,7 @@ public class CorpFragment extends Fragment
 	    return view;		
 	}
 	
+	@Override
 	public void onActivityCreated (Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
@@ -103,6 +157,17 @@ public class CorpFragment extends Fragment
 				dialog.getWindow().setLayout(390, 544);	
 	        }
 	    });	 
+	    
+		// Swipe Gestures to change page
+		gestureDetector = new GestureDetector(getActivity(), new SwipeOnGestureListener());
+		
+		gridviewCorp.setOnTouchListener(new View.OnTouchListener() 
+		{
+		    public boolean onTouch(View v, MotionEvent event) 
+		    {
+		        return gestureDetector.onTouchEvent(event);
+		    }
+		});
 	}
 	
 	@Override

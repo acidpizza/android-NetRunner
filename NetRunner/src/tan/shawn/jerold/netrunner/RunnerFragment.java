@@ -5,10 +5,15 @@ import images.TouchImageView;
 
 import java.util.ArrayList;
 
+import tan.shawn.jerold.netrunner.RunnerFragment.RunnerInterface.swipeDirection;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -18,6 +23,85 @@ import android.widget.GridView;
 
 public class RunnerFragment extends Fragment
 {
+	// ----------------------------------------------------------------------------------
+	
+    private GestureDetector gestureDetector;
+	
+	class SwipeOnGestureListener extends SimpleOnGestureListener 
+	{
+		private final int SWIPE_MIN_DISTANCE = 120;
+	    private final int SWIPE_MAX_OFF_PATH = 250;
+	    private final int SWIPE_THRESHOLD_VELOCITY = 400;
+	    
+	    @Override
+	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) 
+	    {	
+	        try 
+	        {
+	            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+	            {
+	                return false;
+	            }
+	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
+	            {
+	            	// Left Swipe
+	            	_runnerListener.RunnerPageChange(swipeDirection.Left);
+	                return true;
+	            }  
+	            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
+	            {
+	            	// Right Swipe
+	            	_runnerListener.RunnerPageChange(swipeDirection.Right);
+	                return true;
+	            }
+	        } 
+	        catch (Exception e) 
+	        {
+	            // nothing
+	        }
+	        return false;
+	    }
+	
+	}	
+	
+	// ----------------------------------------------------------------------------------
+	
+	private RunnerInterface _runnerListener;
+	
+	public interface RunnerInterface 
+	{
+		public enum swipeDirection
+		{
+			Left, Right
+		}
+
+	    public void RunnerPageChange(swipeDirection direction);
+	}
+	
+	@Override
+	public void onAttach(Activity activity) 
+	{
+		super.onAttach(activity);
+		if (activity instanceof RunnerInterface) 
+		{
+			_runnerListener = (RunnerInterface) activity;
+		} 
+		else 
+		{
+			throw new ClassCastException(activity.toString() + " must implement RunnerFragment.RunnerPageChangerInterface");
+		}
+	}
+
+	@Override
+	public void onDetach() 
+	{
+		super.onDetach();
+		_runnerListener = null;
+	}
+	
+	// ----------------------------------------------------------------------------------------------
+
+	
 	ArrayList<Integer> _cardList = new ArrayList<Integer>();
 	RunnerAdapter _runnerAdapter; 
 	
@@ -56,6 +140,16 @@ public class RunnerFragment extends Fragment
 	        }
 	    });	 
 		
+		// Swipe Gestures to change page
+		gestureDetector = new GestureDetector(getActivity(), new SwipeOnGestureListener());
+		
+		gridviewRunner.setOnTouchListener(new View.OnTouchListener() 
+		{
+		    public boolean onTouch(View v, MotionEvent event) 
+		    {
+		    	return gestureDetector.onTouchEvent(event);
+		    }
+		});
 	}
 
 	@Override

@@ -77,11 +77,10 @@ public class CorpAdapter extends BaseAdapter
             imageView.setImageMatrix(matrix);
             */
     		
-    		
     		Bitmap bMap = BitmapFactory.decodeResource(_context.getResources(), _cardList.get(position));
     		Bitmap bMapRotate = Bitmap.createBitmap(bMap, 0, 0,bMap.getWidth(),bMap.getHeight(), mat, true);
     		imageView.setImageBitmap(bMapRotate);
-    		
+
             imageView.setLayoutParams(new GridView.LayoutParams(150, 108));
     	}
     	else

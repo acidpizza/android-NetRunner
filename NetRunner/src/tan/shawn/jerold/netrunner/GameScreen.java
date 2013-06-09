@@ -1,63 +1,73 @@
 package tan.shawn.jerold.netrunner;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 import cards.Card;
 
-public class GameScreen extends Activity implements CorpFragment.OnItemSelectedListener 
+public class GameScreen extends Activity implements CorpFragment.CorpInterface, RunnerFragment.RunnerInterface 
 {	
-	//@Override
-	public void onItemSelected(String msg) 
-	{
-		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show(); 
+	@Override
+	public void CorpPageChange(CorpFragment.CorpInterface.swipeDirection direction) 
+	{	
+		if(direction == CorpFragment.CorpInterface.swipeDirection.Left)
+		{
+			if( (_gameState._corpState._page + 1) *3 < _gameState._corpState._servers.size() )
+			{
+				++_gameState._corpState._page;
+			}
+			else
+			{
+				Toast.makeText(getApplicationContext(), "Right-most page", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		}
+		else if(direction == CorpFragment.CorpInterface.swipeDirection.Right)
+		{
+			if(_gameState._corpState._page > 0)
+			{
+				--_gameState._corpState._page;
+			}
+			else
+			{
+				Toast.makeText(getApplicationContext(), "Left-most page", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		}
+			
+		_corpFragment.updateUI(_gameState);	
 	}
-	
-	// ----------------------------------------------------------------------------------
-	
-	private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 400;
-    private GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
-	
-    class MyGestureDetector extends SimpleOnGestureListener 
-    {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            try {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                    return false;
-                // right to left swipe
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Toast.makeText(getApplicationContext(), "Left Swipe", Toast.LENGTH_SHORT).show();
-                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                // nothing
-            }
-            return false;
-        }
 
-    }	
+	@Override
+	public void RunnerPageChange(RunnerFragment.RunnerInterface.swipeDirection direction) 
+	{	
+		if(direction == RunnerFragment.RunnerInterface.swipeDirection.Left)
+		{
+			Toast.makeText(getApplicationContext(), "Adding cards...", Toast.LENGTH_SHORT).show();
+			
+			Card.GetRunnerDeck(_gameState._runnerState._rigResources, 1);
+			Card.GetRunnerDeck(_gameState._runnerState._rigHardware, 2);
+			Card.GetRunnerDeck(_gameState._runnerState._rigPrograms, 3);
+		}
+		else if(direction == RunnerFragment.RunnerInterface.swipeDirection.Right)
+		{
+			Toast.makeText(getApplicationContext(), "Clear cards...", Toast.LENGTH_SHORT).show();
+			
+			_gameState._runnerState.resetRunner();
+		}
+
+		_runnerFragment.updateUI(_gameState);
+	}
+
 	
 	// ----------------------------------------------------------------------------------
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
+	
 	private void setupActionBar() 
 	{
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -88,27 +98,25 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
 	// ----------------------------------------------------------------------------------
+
 	private String _side;
 	GameState _gameState = new GameState();
 	CorpFragment _corpFragment = new CorpFragment();
 	RunnerFragment _runnerFragment = new RunnerFragment();
-	
-	ArrayList<Integer> _cardList = new ArrayList<Integer>();
-	int _iceTracker = 0;
 
 	// Save current state into savedInstanceState when activity stops
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) 
 	{
-	  super.onSaveInstanceState(savedInstanceState);
-	  // Save UI state changes to the savedInstanceState.
-	  // This bundle will be passed to onCreate if the process is
-	  // killed and restarted.
-	  
-	  savedInstanceState.putSerializable("GAMESTATE", _gameState);
-	  savedInstanceState.putString("SIDE", _side);
+		super.onSaveInstanceState(savedInstanceState);
+		// Save UI state changes to the savedInstanceState.
+		// This bundle will be passed to onCreate if the process is
+		// killed and restarted.
+
+		savedInstanceState.putSerializable("GAMESTATE", _gameState);
+		savedInstanceState.putString("SIDE", _side);
 	}
 
 	// 1st Creation or Restoration of activity. Restoration will take state from savedInstanceState. 
@@ -119,19 +127,6 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 		setContentView(R.layout.activity_game_screen);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
-		
-        // Gesture detection
-        gestureDetector = new GestureDetector(this, new MyGestureDetector());
-        gestureListener = new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        };
-        //FrameLayout frame = (FrameLayout) findViewById(R.id.SideFragmentHolder);
-        Button frame = (Button) findViewById(R.id.button1);
-        frame.setOnTouchListener(gestureListener);
 		
         // Retrieve values from previous activity or from restored state
         if(GetValuesFromIntent(savedInstanceState))
@@ -259,29 +254,6 @@ public class GameScreen extends Activity implements CorpFragment.OnItemSelectedL
 	public void SwitchPage(View view)
 	{
 		Log.e("1","Page");
-		
-		if(_side.equals("Corporation"))
-		{
-			if(_gameState._corpState._page == 0)
-			{	
-				_gameState._corpState._page = 1;
-				
-				_corpFragment.updateUI(_gameState);
-			}
-			else if(_gameState._corpState._page == 1)
-			{		
-				_gameState._corpState._page = 0;
-				
-				_corpFragment.updateUI(_gameState);
-			}
-		}
-		else if(_side.equals("Runner"))
-		{
-			Card.GetRunnerDeck(_gameState._runnerState._rigResources, 1);
-			Card.GetRunnerDeck(_gameState._runnerState._rigHardware, 2);
-			Card.GetRunnerDeck(_gameState._runnerState._rigPrograms, 3);
-			_runnerFragment.updateUI(_gameState);
-		}
 	}
 	
 	// Add the starting cards to _gameState and updateCardList.
