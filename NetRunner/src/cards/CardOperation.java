@@ -8,6 +8,7 @@ import tan.shawn.jerold.netrunner.R;
 
 public abstract class CardOperation extends Card
 {
+	private static final long serialVersionUID = 1363014333113070885L;
 	int _cost = 0;
 	
 	public enum OperationType
@@ -22,13 +23,14 @@ public abstract class CardOperation extends Card
 
 class CardOperation_AggressiveNegotiation extends CardOperation
 {
+	private static final long serialVersionUID = -9100397657971746872L;
+
 	public CardOperation_AggressiveNegotiation()
 	{
 		_drawableID = R.drawable.wey_op1;
 		_cost = 1;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean operation(GameState gameState)
 	{
@@ -54,6 +56,8 @@ class CardOperation_AggressiveNegotiation extends CardOperation
 
 class CardOperation_BeanstalkRoyalties extends CardOperation
 {
+	private static final long serialVersionUID = -3020426210433672447L;
+
 	public CardOperation_BeanstalkRoyalties()
 	{
 		_drawableID = R.drawable.wey_op2;
@@ -78,6 +82,8 @@ class CardOperation_BeanstalkRoyalties extends CardOperation
 
 class CardOperation_ScorchedEarth extends CardOperation
 {
+	private static final long serialVersionUID = -4553153305937641146L;
+
 	public CardOperation_ScorchedEarth()
 	{
 		_drawableID = R.drawable.wey_op3;
@@ -103,6 +109,8 @@ class CardOperation_ScorchedEarth extends CardOperation
 
 class CardOperation_ShipmentFromKaguya extends CardOperation
 {
+	private static final long serialVersionUID = 3767917660271578117L;
+
 	public CardOperation_ShipmentFromKaguya()
 	{
 		_drawableID = R.drawable.wey_op4;

@@ -1,11 +1,14 @@
 package cards;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import tan.shawn.jerold.netrunner.R;
 
-public class Card implements Comparable<Card>
+public class Card implements Comparable<Card>, Serializable
 {
+	private static final long serialVersionUID = -6480854425344930585L;
+
 	public int _drawableID; // graphic assigned to this card
 	
 	public enum CardType

@@ -7,6 +7,8 @@ import cards.Card;
 
 public class GameState implements Serializable
 {
+	private static final long serialVersionUID = 7386075871278144765L;
+
 	public GameState()
 	{
 		
@@ -19,8 +21,10 @@ public class GameState implements Serializable
 	PlayerSide _playerID; // Which side the player is on.
 	PlayerSide _curPlayerTurn; // Which side's turn it is now.
 	
-	public class SideState
+	public class SideState implements Serializable
 	{
+		private static final long serialVersionUID = 1612896925770220849L;
+		
 		int _credits = 0;
 		int _clicksLeft = 0;
 		public ArrayList<Card> _scoredAgendas = new ArrayList<Card>(); 
@@ -59,6 +63,8 @@ public class GameState implements Serializable
 	
 	public class CorpState extends SideState
 	{	
+		private static final long serialVersionUID = -2023853242287901867L;
+
 		public int _page;
 		
 		public ArrayList<Card> _discards;
@@ -70,8 +76,10 @@ public class GameState implements Serializable
 		public ArrayList<Card> _hand;
 		public int _maxHandSize;
 		
-		public class Server
+		public class Server implements Serializable
 		{
+			private static final long serialVersionUID = -1039936668508851097L;
+			
 			public ArrayList<Card> _ice = new ArrayList<Card>();
 			public ArrayList<Card> _installs = new ArrayList<Card>();	
 		}
@@ -128,6 +136,8 @@ public class GameState implements Serializable
 	
 	public class RunnerState extends SideState
 	{
+		private static final long serialVersionUID = -3835428212875308119L;
+		
 		public ArrayList<Card> _rigResources = new ArrayList<Card>();
 		public ArrayList<Card> _rigHardware = new ArrayList<Card>();
 		public ArrayList<Card> _rigPrograms = new ArrayList<Card>();
