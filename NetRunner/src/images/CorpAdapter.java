@@ -120,11 +120,13 @@ public class CorpAdapter extends BaseAdapter
     	
     	if(_cardList.get(position) == R.drawable.nothing)
         {
-        	imageView.setVisibility(View.INVISIBLE);
+        	frame.setVisibility(View.INVISIBLE);
+    		//imageView.setVisibility(View.INVISIBLE);
         }
         else
         {
-        	imageView.setVisibility(View.VISIBLE);
+        	frame.setVisibility(View.VISIBLE);
+        	//imageView.setVisibility(View.VISIBLE);
         }
     	        
     	return frame;

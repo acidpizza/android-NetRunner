@@ -1,0 +1,3 @@
+[Issues]
+- Tapped cards lag: Add rotated images? Need 2 lists to track rotated and non-rotated images
+- Serializable to Parcelable?

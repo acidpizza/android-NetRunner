@@ -125,7 +125,8 @@ public class GameState implements Serializable
 		
 	    public void resetCorp()
 		{
-			for(int i=0; i<_corpState._servers.size(); i++)
+	    	int serverSize = _corpState._servers.size();
+			for(int i=0; i < serverSize; i++)
 			{
 				_corpState._servers.get(i)._ice.clear();
 				_corpState._servers.get(i)._installs.clear();
